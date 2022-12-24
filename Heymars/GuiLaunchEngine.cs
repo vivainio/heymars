@@ -24,7 +24,7 @@ namespace GuiLaunch
         public string cwd { get; set; }
 
         public string title { get; set; }
-        public bool shell { get; set; }
+        public bool? shell { get; set; }
         public override string ToString()
         {
             return c + (cwd == null ? "" : " || Cwd: " + cwd);  
@@ -131,7 +131,7 @@ namespace GuiLaunch
             AnsiConsole.Write(new Markup(">>> [blue]" + commandString + "[/]\n"));
             Command cmd = null;
             var absbin = Path.Combine(cwd, parts[0]);
-            if (command.shell)
+            if (command.shell ?? true)
             {
                 cmd = Cli.Wrap("cmd").WithArguments("/c " + commandString);
 
