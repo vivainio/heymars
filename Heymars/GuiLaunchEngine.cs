@@ -22,6 +22,7 @@ namespace GuiLaunch
         public string c { get; set; }
         public string cwd { get; set; }
 
+        public string title { get; set; }
         public override string ToString()
         {
             return c + (cwd == null ? "" : " || Cwd: " + cwd);  

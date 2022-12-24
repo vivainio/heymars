@@ -29,7 +29,7 @@ namespace GuiLaunch
         {
             foreach (var c in eng.Commands)
             {
-                int idx = commandGrid.Rows.Add(new[] { c.c, "" });
+                int idx = commandGrid.Rows.Add(new[] { c.title ?? c.c, "" });
                 commandGrid.Rows[idx].Cells[0].ToolTipText = c.ToString();
 
             }

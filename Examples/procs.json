@@ -1,5 +1,6 @@
 [
     {"c": "ls -la"},
     {"c": "pwd"},
-    {"c": "pwd", "cwd": "c:/"}
+    {"c": "pwd", "cwd": "c:/"},
+    {"c": "pwd", "title": "Yet another pwd"}
 ]
