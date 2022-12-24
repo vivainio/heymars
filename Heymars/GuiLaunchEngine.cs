@@ -174,16 +174,19 @@ namespace GuiLaunch
 
 
             }
+
+            Color ocolor = index % 14 + 2;
+            var cname = ocolor.ToMarkup();
             await foreach (var cmdEvent in cmd.ListenAsync())
             {
                 switch (cmdEvent)
                 {
                     case StartedCommandEvent start:
-                        write(v, "green", "Start pid " + start.ProcessId);
+                        write(v, cname, "Start pid " + start.ProcessId);
                         RunningPid[index] = start.ProcessId;
                         break;
                     case StandardOutputCommandEvent stdOut:
-                        write(v, "green", stdOut.Text); 
+                        write(v, cname, stdOut.Text); 
                         break;
                     case StandardErrorCommandEvent stdErr:
                         write(v, "red", stdErr.Text); 
