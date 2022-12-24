@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Spectre.Console;
 using System.Text.Json;
+using System.Diagnostics;
 
 namespace GuiLaunch
 {
@@ -23,6 +24,7 @@ namespace GuiLaunch
         public string cwd { get; set; }
 
         public string title { get; set; }
+        public bool shell { get; set; }
         public override string ToString()
         {
             return c + (cwd == null ? "" : " || Cwd: " + cwd);  
@@ -30,11 +32,18 @@ namespace GuiLaunch
 
     }
 
+    public class ConfigFile
+    {
+        public CommandEntry[] commands { get; set; }
+        public string root { get; set; }
+    }
 
     public class GuiLaunchEngine
     {
         public CommandEntry[] Commands = null;
         public string Cwd = null;
+
+        public Dictionary<int, int> RunningPid = new Dictionary<int, int>();
 
 
         IProcessEvents _listener = null;
@@ -52,24 +61,49 @@ namespace GuiLaunch
 
         } 
 
-        public static CommandEntry[] ReadJsonFile(string fname)
+        public static ConfigFile ReadJsonFile(string fname)
         {
+
             var cont = File.ReadAllBytes(fname);
-            return JsonSerializer.Deserialize<CommandEntry[]>(cont);
+            return JsonSerializer.Deserialize<ConfigFile>(cont);
         }
 
-        public void Read(string fname)
+        public static async Task<ConfigFile> ReadJsonnetFile(string fname)
+        {
+            var o = await Cli.Wrap("jsonnet").WithArguments(fname).ExecuteBufferedAsync();
+            var json = o.StandardOutput;
+            AnsiConsole.Write(new Markup($"Jsonnet expansion:\n [blue]{json.EscapeMarkup()}[/]"));
+            return JsonSerializer.Deserialize<ConfigFile>(o.StandardOutput);
+
+
+        }
+
+        public async Task Read(string fname)
         {
            
             Cwd = Path.GetDirectoryName(fname);
-            
+            ConfigFile configFile = null;
             if (fname.EndsWith(".txt"))
             {
                 Commands = ReadTextFile(fname);
             } else if (fname.EndsWith(".json"))
             {
-                Commands = ReadJsonFile(fname);
+                configFile = ReadJsonFile(fname);
+            } else if (fname.EndsWith(".jsonnet"))
+            {
+                configFile = await ReadJsonnetFile(fname);
             }
+            if (configFile != null)
+            {
+                if (configFile.root != null)
+                {
+                    Cwd = Path.Combine(Cwd, configFile.root);
+                }
+
+                Commands = configFile.commands;
+            }
+
+            Cwd = Path.GetFullPath(Cwd);
         }
 
         public async Task Selected(int index, Func<string, string, Task> outputCallback = null)
@@ -94,17 +128,38 @@ namespace GuiLaunch
             }
 
             var cwd = !string.IsNullOrEmpty(command.cwd) ? Path.Combine(Cwd, command.cwd) : Cwd;
+            AnsiConsole.Write(new Markup(">>> [blue]" + commandString + "[/]\n"));
+            Command cmd = null;
+            var absbin = Path.Combine(cwd, parts[0]);
+            if (command.shell)
+            {
+                cmd = Cli.Wrap("cmd").WithArguments("/c " + commandString);
 
-            var cmd = Cli.Wrap("cmd")
-                .WithArguments("/c " + commandString)
+            } else
+            {
+                if (!File.Exists(absbin))
+                {
+                    AnsiConsole.Write(new Markup($"\n[red]File not found: [/][yellow]{absbin}[/]\n"));
+                    return;
+                }
+               
+                cmd = Cli.Wrap(absbin).WithArguments(parts[1]);
+                
+
+            }
+
+            cmd = cmd
                 .WithWorkingDirectory(cwd)
                 .WithValidation(CommandResultValidation.None);
 
             _listener.ProcessStatusChanged(index, "...");
+            int pid = -1;
             if (outputCallback != null)
             {
-                AnsiConsole.Write(new Markup("[blue]" + commandString + "[/]\n"));
-                var bufout = await cmd.ExecuteBufferedAsync(Encoding.UTF8);
+                var task = cmd.ExecuteBufferedAsync(Encoding.UTF8);
+                pid = task.ProcessId;
+                RunningPid[index] = pid;
+                var bufout = await task;
                 ReportProcessExit(index, bufout);
                 await outputCallback(bufout.StandardOutput, bufout.StandardError);
             } else
@@ -112,10 +167,14 @@ namespace GuiLaunch
                 cmd = cmd
                     .WithStandardOutputPipe(PipeTarget.ToStream(stdout))
                     .WithStandardErrorPipe(PipeTarget.ToStream(stderr));
-                var res = await cmd.ExecuteAsync();
+                var task = cmd.ExecuteAsync();
+                pid = task.ProcessId;
+                RunningPid[index] = pid;
+                var res = await task;
                 ReportProcessExit(index, res);
 
             }
+            RunningPid.Remove(index); 
             AnsiConsole.Write(new Markup($"[green] === DONE === [/] [blue]{commandString}[/]\n"));
         }
 
@@ -141,6 +200,16 @@ namespace GuiLaunch
 
         }
 
+        private void KillAtIndex(int index)
+        {
+            if (RunningPid.ContainsKey(index))
+            {
+                int pid = RunningPid[index];
+                AnsiConsole.Write(new Markup("[red]Killing process[/]"));
+                Process.GetProcessById(pid).Kill();
+            }
+
+        }
         internal async Task<bool> KeyPress(Keys keyChar, int index)
         {
 
@@ -159,6 +228,11 @@ namespace GuiLaunch
                             var err = string.IsNullOrEmpty(e) ? "" : "\n...\nstderr:\n" +e;
                             await OpenInEditor(o + err);
                         });
+                        break;
+                    }
+                case Keys.Back:
+                    {
+                        KillAtIndex(index);
                         break;
                     }
                 default:

@@ -12,15 +12,18 @@ namespace GuiLaunch
 
     }
 
-    public class LauncherCommand : Command<LauncherSettings>
+    public class LauncherCommand : AsyncCommand<LauncherSettings>
     {
-        public override int Execute(CommandContext context, LauncherSettings settings)
+
+        public override async Task<int> ExecuteAsync(CommandContext context, LauncherSettings settings)
         {
             var eng = new GuiLaunchEngine();
-            eng.Read(settings.Config ?? "commands.txt");
-            Application.Run(new Form1(eng));
+            await eng.Read(settings.Config ?? "commands.txt");
+            var form = new Form1(eng);
+            form.Text = "Heymars " + eng.Cwd;
+            Application.Run(form);
             return 0;
-        }
+      }
     }
 
     internal static class Program
