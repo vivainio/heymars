@@ -55,7 +55,6 @@
             this.commandGrid.RowHeadersWidth = 51;
             this.commandGrid.RowTemplate.Height = 24;
             this.commandGrid.ShowCellErrors = false;
-            this.commandGrid.ShowCellToolTips = false;
             this.commandGrid.ShowEditingIcon = false;
             this.commandGrid.ShowRowErrors = false;
             this.commandGrid.Size = new System.Drawing.Size(847, 478);

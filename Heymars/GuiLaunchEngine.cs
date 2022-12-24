@@ -22,6 +22,11 @@ namespace GuiLaunch
         public string c { get; set; }
         public string cwd { get; set; }
 
+        public override string ToString()
+        {
+            return c + (cwd == null ? "" : " || Cwd: " + cwd);  
+        }
+
     }
 
 
@@ -55,6 +60,8 @@ namespace GuiLaunch
         public void Read(string fname)
         {
            
+            Cwd = Path.GetDirectoryName(fname);
+            
             if (fname.EndsWith(".txt"))
             {
                 Commands = ReadTextFile(fname);
@@ -66,8 +73,9 @@ namespace GuiLaunch
 
         public async Task Selected(int index, Func<string, string, Task> outputCallback = null)
         {
-            var selected = Commands[index].c;
-            var parts = selected.Split(new char[] { ' ' }, 2);
+            var command = Commands[index];
+            var commandString = command.c;
+            var parts = commandString.Split(new char[] { ' ' }, 2);
             if (parts[0] == "cd")
             {
                 Cwd = parts[1];
@@ -84,15 +92,17 @@ namespace GuiLaunch
 
             }
 
+            var cwd = !string.IsNullOrEmpty(command.cwd) ? Path.Combine(Cwd, command.cwd) : Cwd;
+
             var cmd = Cli.Wrap("cmd")
-                .WithArguments("/c " + selected)
-                .WithWorkingDirectory(Cwd)
+                .WithArguments("/c " + commandString)
+                .WithWorkingDirectory(cwd)
                 .WithValidation(CommandResultValidation.None);
 
             _listener.ProcessStatusChanged(index, "...");
             if (outputCallback != null)
             {
-                AnsiConsole.Write(new Markup("[blue]" + selected + "[/]\n"));
+                AnsiConsole.Write(new Markup("[blue]" + commandString + "[/]\n"));
                 var bufout = await cmd.ExecuteBufferedAsync(Encoding.UTF8);
                 ReportProcessExit(index, bufout);
                 await outputCallback(bufout.StandardOutput, bufout.StandardError);
@@ -105,7 +115,7 @@ namespace GuiLaunch
                 ReportProcessExit(index, res);
 
             }
-            AnsiConsole.Write(new Markup($"[green] === DONE === [/] [blue]{selected}[/]\n"));
+            AnsiConsole.Write(new Markup($"[green] === DONE === [/] [blue]{commandString}[/]\n"));
         }
 
         private void ReportProcessExit(int index, CommandResult res)
