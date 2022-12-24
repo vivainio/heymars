@@ -10,6 +10,8 @@ using System.Windows.Forms;
 using Spectre.Console;
 using System.Text.Json;
 using System.Diagnostics;
+using CliWrap.EventStream;
+using System.Configuration;
 
 namespace GuiLaunch
 {
@@ -118,14 +120,6 @@ namespace GuiLaunch
                 
                 return;
             }
-            Stream stdout = null;
-            Stream stderr = null;
-            if (outputCallback == null)
-            {
-                stdout = Console.OpenStandardOutput();
-                stderr = Console.OpenStandardError();
-
-            }
 
             var cwd = !string.IsNullOrEmpty(command.cwd) ? Path.Combine(Cwd, command.cwd) : Cwd;
             AnsiConsole.Write(new Markup(">>> [blue]" + commandString + "[/]\n"));
@@ -160,36 +154,70 @@ namespace GuiLaunch
                 pid = task.ProcessId;
                 RunningPid[index] = pid;
                 var bufout = await task;
-                ReportProcessExit(index, bufout);
+                ReportProcessExit(index, GetExitDesc(bufout.ExitCode, (int)bufout.RunTime.TotalSeconds));
                 await outputCallback(bufout.StandardOutput, bufout.StandardError);
             } else
             {
-                cmd = cmd
-                    .WithStandardOutputPipe(PipeTarget.ToStream(stdout))
-                    .WithStandardErrorPipe(PipeTarget.ToStream(stderr));
-                var task = cmd.ExecuteAsync();
-                pid = task.ProcessId;
-                RunningPid[index] = pid;
-                var res = await task;
-                ReportProcessExit(index, res);
+                var (exit, secs) = await StreamResults(index, parts[0], cmd);
 
+                ReportProcessExit(index, GetExitDesc(exit, secs));
             }
             RunningPid.Remove(index); 
             AnsiConsole.Write(new Markup($"[green] === DONE === [/] [blue]{commandString}[/]\n"));
         }
 
-        private void ReportProcessExit(int index, CommandResult res)
+        private async Task<(int ExitCode, int Seconds)> StreamResults(int index, string v, Command cmd)
+        {
+            void write(string title, string color, string text)
+            {
+                AnsiConsole.Write(new Markup($"[{color}]{title}:[/] {text.EscapeMarkup()}\n"));
+
+
+            }
+            await foreach (var cmdEvent in cmd.ListenAsync())
+            {
+                switch (cmdEvent)
+                {
+                    case StartedCommandEvent start:
+                        write(v, "green", "Start pid " + start.ProcessId);
+                        RunningPid[index] = start.ProcessId;
+                        break;
+                    case StandardOutputCommandEvent stdOut:
+                        write(v, "green", stdOut.Text); 
+                        break;
+                    case StandardErrorCommandEvent stdErr:
+                        write(v, "red", stdErr.Text); 
+                        break;
+                    case ExitedCommandEvent ex:
+                        return (ex.ExitCode, 0);
+                }
+            }
+            return (0, 0);
+
+        }
+
+        private string GetExitDesc(int exitCode, int secs)
         {
             var message = "";
-            if (res.ExitCode == 0)
+
+            if (exitCode == 0)
             {
                 message = $"ok ";
             }
             else
             {
-                message = $"err {res.ExitCode} ";
+                message = $"err {exitCode} ";
             }
-            message += $"{res.RunTime.TotalSeconds:0}s";
+            if (secs > 0)
+            {
+                message += $"{secs}s";
+
+            }
+            return message;
+
+        }
+        private void ReportProcessExit(int index, string message)
+        {
             _listener.ProcessStatusChanged(index, message);
 
         }
