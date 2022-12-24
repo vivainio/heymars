@@ -63,17 +63,14 @@
             // 
             // Command
             // 
-            this.Command.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCellsExceptHeader;
-            this.Command.Frozen = true;
+            this.Command.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.Command.HeaderText = "Command";
             this.Command.MinimumWidth = 6;
             this.Command.Name = "Command";
             this.Command.ReadOnly = true;
-            this.Command.Width = 6;
             // 
             // Status
             // 
-            this.Status.Frozen = true;
             this.Status.HeaderText = "Status";
             this.Status.MinimumWidth = 6;
             this.Status.Name = "Status";
