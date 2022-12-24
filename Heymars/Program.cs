@@ -38,6 +38,7 @@ namespace GuiLaunch
         {
            
             Application.EnableVisualStyles();
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.SetCompatibleTextRenderingDefault(false);
             var app = new CommandApp();
             app.SetDefaultCommand<LauncherCommand>();
