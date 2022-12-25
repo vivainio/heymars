@@ -30,6 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.commandGrid = new System.Windows.Forms.DataGridView();
+            this.Index = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Command = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.commandGrid)).BeginInit();
@@ -46,10 +47,12 @@
             this.commandGrid.BackgroundColor = System.Drawing.SystemColors.Control;
             this.commandGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.commandGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Index,
             this.Command,
             this.Status});
             this.commandGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.commandGrid.Location = new System.Drawing.Point(-2, 0);
+            this.commandGrid.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.commandGrid.Name = "commandGrid";
             this.commandGrid.RowHeadersVisible = false;
             this.commandGrid.RowHeadersWidth = 51;
@@ -57,9 +60,19 @@
             this.commandGrid.ShowCellErrors = false;
             this.commandGrid.ShowEditingIcon = false;
             this.commandGrid.ShowRowErrors = false;
-            this.commandGrid.Size = new System.Drawing.Size(847, 478);
+            this.commandGrid.Size = new System.Drawing.Size(1055, 598);
             this.commandGrid.TabIndex = 2;
+            this.commandGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.commandGrid_CellContentClick);
             this.commandGrid.KeyDown += new System.Windows.Forms.KeyEventHandler(this.commandGrid_KeyDown_1);
+            // 
+            // Index
+            // 
+            this.Index.Frozen = true;
+            this.Index.HeaderText = "#";
+            this.Index.MinimumWidth = 6;
+            this.Index.Name = "Index";
+            this.Index.ReadOnly = true;
+            this.Index.Width = 47;
             // 
             // Command
             // 
@@ -75,15 +88,16 @@
             this.Status.MinimumWidth = 6;
             this.Status.Name = "Status";
             this.Status.ReadOnly = true;
-            this.Status.Width = 73;
+            this.Status.Width = 78;
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(845, 490);
+            this.ClientSize = new System.Drawing.Size(1053, 612);
             this.Controls.Add(this.commandGrid);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "Form1";
             this.Text = "Heymars";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -94,6 +108,7 @@
 
         #endregion
         private System.Windows.Forms.DataGridView commandGrid;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Index;
         private System.Windows.Forms.DataGridViewTextBoxColumn Command;
         private System.Windows.Forms.DataGridViewTextBoxColumn Status;
     }

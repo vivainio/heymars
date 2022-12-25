@@ -158,7 +158,7 @@ namespace GuiLaunch
                 await outputCallback(bufout.StandardOutput, bufout.StandardError);
             } else
             {
-                var (exit, secs) = await StreamResults(index, parts[0], cmd);
+                var (exit, secs) = await StreamResults(index, index.ToString(), cmd);
 
                 ReportProcessExit(index, GetExitDesc(exit, secs));
             }

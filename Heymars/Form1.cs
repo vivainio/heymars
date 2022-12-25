@@ -27,9 +27,10 @@ namespace GuiLaunch
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            foreach (var c in eng.Commands)
+            for (int index = 0; index < eng.Commands.Count(); index++)
             {
-                int idx = commandGrid.Rows.Add(new[] { c.title ?? c.c, "" });
+                var c = eng.Commands[index];
+                int idx = commandGrid.Rows.Add(new[] { (object) index, (string) c.title ?? c.c, "" });
                 commandGrid.Rows[idx].Cells[0].ToolTipText = c.ToString();
 
             }
@@ -48,6 +49,11 @@ namespace GuiLaunch
         }
 
         private void commandListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void commandGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
         }

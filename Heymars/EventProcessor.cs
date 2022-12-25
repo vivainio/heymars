@@ -12,7 +12,7 @@ namespace GuiLaunch
         }
         public void ProcessStatusChanged(int index, string status)
         {
-            grid.Rows[index].Cells[1].Value = status;
+            grid.Rows[index].Cells[2].Value = status;
         }
     }
 }
