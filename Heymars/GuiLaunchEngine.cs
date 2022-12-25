@@ -11,7 +11,7 @@ using Spectre.Console;
 using System.Text.Json;
 using System.Diagnostics;
 using CliWrap.EventStream;
-using System.Configuration;
+using Microsoft.VisualBasic.Logging;
 
 namespace GuiLaunch
 {
@@ -49,6 +49,7 @@ namespace GuiLaunch
 
 
         IProcessEvents _listener = null;
+        public StreamWriter LogStream { get; set; }
 
         public IProcessEvents Listener { get => _listener; set => _listener = value; }
 
@@ -171,7 +172,11 @@ namespace GuiLaunch
             void write(string title, string color, string text)
             {
                 AnsiConsole.Write(new Markup($"[{color}]{title}:[/] {text.EscapeMarkup()}\n"));
-
+                if (LogStream != null)
+                {
+                    LogStream.WriteLine($"{title}: {text}");
+                    
+                }
 
             }
 
@@ -225,6 +230,10 @@ namespace GuiLaunch
 
         }
 
+        private async Task OpenFileInEditor(string fname)
+        {
+            await Cli.Wrap("code").WithArguments(fname).ExecuteAsync();
+        }
         private async Task OpenInEditor(string content)
         {
             await Cli.Wrap("code").WithArguments("-").WithStandardInputPipe(PipeSource.FromString(content)).ExecuteAsync();
@@ -275,5 +284,21 @@ namespace GuiLaunch
             }
             return supress;
         }
+        string LogFileName => Path.Combine(Cwd, "heymars.log");
+        internal void StartLog()
+        {
+            LogStream = new StreamWriter(LogFileName);
+            LogStream.AutoFlush = true;
+        }
+        internal async void StopLog()
+        {
+            var s = LogStream;
+            LogStream = null;
+            s.Flush();
+            s.Close();
+            await OpenFileInEditor(LogFileName);
+            LogStream = null;
+        }
+
     }
 }

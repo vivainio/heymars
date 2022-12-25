@@ -57,5 +57,21 @@ namespace GuiLaunch
         {
 
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (eng.LogStream == null)
+            {
+                eng.StartLog();
+                btnLog.Text = "Stop log";
+            } else
+            {
+                eng.StopLog();
+                btnLog.Text = "Log";
+            }
+            
+
+
+        }
     }
 }

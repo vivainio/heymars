@@ -33,6 +33,7 @@
             this.Index = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Command = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.btnLog = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.commandGrid)).BeginInit();
             this.SuspendLayout();
             // 
@@ -51,7 +52,7 @@
             this.Command,
             this.Status});
             this.commandGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.commandGrid.Location = new System.Drawing.Point(-2, 0);
+            this.commandGrid.Location = new System.Drawing.Point(12, 13);
             this.commandGrid.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.commandGrid.Name = "commandGrid";
             this.commandGrid.RowHeadersVisible = false;
@@ -60,7 +61,7 @@
             this.commandGrid.ShowCellErrors = false;
             this.commandGrid.ShowEditingIcon = false;
             this.commandGrid.ShowRowErrors = false;
-            this.commandGrid.Size = new System.Drawing.Size(1055, 598);
+            this.commandGrid.Size = new System.Drawing.Size(1055, 551);
             this.commandGrid.TabIndex = 2;
             this.commandGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.commandGrid_CellContentClick);
             this.commandGrid.KeyDown += new System.Windows.Forms.KeyEventHandler(this.commandGrid_KeyDown_1);
@@ -90,11 +91,23 @@
             this.Status.ReadOnly = true;
             this.Status.Width = 78;
             // 
+            // btnLog
+            // 
+            this.btnLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnLog.Location = new System.Drawing.Point(12, 571);
+            this.btnLog.Name = "btnLog";
+            this.btnLog.Size = new System.Drawing.Size(94, 29);
+            this.btnLog.TabIndex = 3;
+            this.btnLog.Text = "Log";
+            this.btnLog.UseVisualStyleBackColor = true;
+            this.btnLog.Click += new System.EventHandler(this.button1_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1053, 612);
+            this.Controls.Add(this.btnLog);
             this.Controls.Add(this.commandGrid);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -111,6 +124,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Index;
         private System.Windows.Forms.DataGridViewTextBoxColumn Command;
         private System.Windows.Forms.DataGridViewTextBoxColumn Status;
+        private System.Windows.Forms.Button btnLog;
     }
 }
 
