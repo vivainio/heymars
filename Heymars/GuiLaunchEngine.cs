@@ -55,9 +55,21 @@ namespace GuiLaunch
 
         public static CommandEntry[] ReadTextFile(string fname)
         {
-            var lines = File.ReadAllLines(fname);
-            return lines.Select(line => new CommandEntry
+            bool ValidCommand(string s)
             {
+                if (string.IsNullOrEmpty(s.Trim()))
+                {
+                    return false;
+                }
+
+                return true;
+
+            }
+
+            var lines = File.ReadAllLines(fname);
+            return lines.Where(ValidCommand).Select(line => new CommandEntry
+            {
+                shell= true,
                 c = line
 
             }).ToArray();
@@ -86,15 +98,15 @@ namespace GuiLaunch
            
             Cwd = Path.GetDirectoryName(fname);
             ConfigFile configFile = null;
-            if (fname.EndsWith(".txt"))
-            {
-                Commands = ReadTextFile(fname);
-            } else if (fname.EndsWith(".json"))
+            if (fname.EndsWith(".json"))
             {
                 configFile = ReadJsonFile(fname);
             } else if (fname.EndsWith(".jsonnet"))
             {
                 configFile = await ReadJsonnetFile(fname);
+            }
+            else {
+                Commands = ReadTextFile(fname);
             }
             if (configFile != null)
             {
