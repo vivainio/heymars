@@ -34,6 +34,7 @@
             this.Command = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.btnLog = new System.Windows.Forms.Button();
+            this.btnOutput = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.commandGrid)).BeginInit();
             this.SuspendLayout();
             // 
@@ -64,6 +65,8 @@
             this.commandGrid.Size = new System.Drawing.Size(1055, 551);
             this.commandGrid.TabIndex = 2;
             this.commandGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.commandGrid_CellContentClick);
+            this.commandGrid.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.commandGrid_RowEnter);
+            this.commandGrid.SelectionChanged += new System.EventHandler(this.commandGrid_SelectionChanged);
             this.commandGrid.KeyDown += new System.Windows.Forms.KeyEventHandler(this.commandGrid_KeyDown_1);
             // 
             // Index
@@ -102,11 +105,23 @@
             this.btnLog.UseVisualStyleBackColor = true;
             this.btnLog.Click += new System.EventHandler(this.button1_Click);
             // 
+            // btnOutput
+            // 
+            this.btnOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnOutput.Location = new System.Drawing.Point(112, 571);
+            this.btnOutput.Name = "btnOutput";
+            this.btnOutput.Size = new System.Drawing.Size(94, 29);
+            this.btnOutput.TabIndex = 4;
+            this.btnOutput.Text = "Output";
+            this.btnOutput.UseVisualStyleBackColor = true;
+            this.btnOutput.Click += new System.EventHandler(this.button1_Click_1);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1053, 612);
+            this.Controls.Add(this.btnOutput);
             this.Controls.Add(this.btnLog);
             this.Controls.Add(this.commandGrid);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -125,6 +140,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Command;
         private System.Windows.Forms.DataGridViewTextBoxColumn Status;
         private System.Windows.Forms.Button btnLog;
+        private System.Windows.Forms.Button btnOutput;
     }
 }
 

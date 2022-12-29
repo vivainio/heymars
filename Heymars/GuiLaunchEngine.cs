@@ -12,6 +12,8 @@ using System.Text.Json;
 using System.Diagnostics;
 using CliWrap.EventStream;
 using Microsoft.VisualBasic.Logging;
+using CircularBuffer;
+using System.Reflection.Metadata;
 
 namespace GuiLaunch
 {
@@ -20,6 +22,11 @@ namespace GuiLaunch
         void ProcessStatusChanged(int index, string status);
     }
 
+    public class RunningCommand
+    {
+        public string Pid { get; set; }
+        public CircularBuffer<string> OutputBuf = new CircularBuffer<string>(50000); 
+    }
     public class CommandEntry
     {
         public string c { get; set; }
@@ -46,6 +53,7 @@ namespace GuiLaunch
         public string Cwd = null;
 
         public Dictionary<int, int> RunningPid = new Dictionary<int, int>();
+        Dictionary<int, RunningCommand> Running = new Dictionary<int, RunningCommand>();
 
 
         IProcessEvents _listener = null;
@@ -121,6 +129,7 @@ namespace GuiLaunch
             Cwd = Path.GetFullPath(Cwd);
         }
 
+
         public async Task Selected(int index, Func<string, string, Task> outputCallback = null)
         {
             var command = Commands[index];
@@ -159,6 +168,8 @@ namespace GuiLaunch
                 .WithWorkingDirectory(cwd)
                 .WithValidation(CommandResultValidation.None);
 
+            Running[index] = new RunningCommand();
+
             _listener.ProcessStatusChanged(index, "...");
             int pid = -1;
             if (outputCallback != null)
@@ -181,8 +192,15 @@ namespace GuiLaunch
 
         private async Task<(int ExitCode, int Seconds)> StreamResults(int index, string v, Command cmd)
         {
+
+
+            var buf = Running[index].OutputBuf;
             void write(string title, string color, string text)
             {
+                if (CollectOutput)
+                {
+                    buf.PushBack(text);
+                }
                 AnsiConsole.Write(new Markup($"[{color}]{title}:[/] {text.EscapeMarkup()}\n"));
                 if (LogStream != null)
                 {
@@ -210,6 +228,9 @@ namespace GuiLaunch
                         break;
                     case ExitedCommandEvent ex:
                         return (ex.ExitCode, 0);
+                    default:
+                        write("UNK", "red", "Unknown event :" + cmdEvent.ToString());
+                        break;
                 }
             }
             return (0, 0);
@@ -258,7 +279,15 @@ namespace GuiLaunch
             {
                 int pid = RunningPid[index];
                 AnsiConsole.Write(new Markup("[red]Killing process[/]"));
-                Process.GetProcessById(pid).Kill();
+                try
+                {
+                    Process.GetProcessById(pid).Kill(true);
+
+                } catch (ArgumentException)
+                {
+                    _listener.ProcessStatusChanged(index, "err?");
+                }
+                
             }
 
         }
@@ -297,6 +326,9 @@ namespace GuiLaunch
             return supress;
         }
         string LogFileName => Path.Combine(Cwd, "heymars.log");
+
+        public bool CollectOutput { get; internal set; }
+
         internal void StartLog()
         {
             LogStream = new StreamWriter(LogFileName);
@@ -310,6 +342,24 @@ namespace GuiLaunch
             s.Close();
             await OpenFileInEditor(LogFileName);
             LogStream = null;
+        }
+
+        public string GetOutput(int index)
+        {
+            if (!Running.ContainsKey(index))
+            {
+                return null;
+            }
+            var buf = Running[index]?.OutputBuf;
+           
+            var sb = new StringBuilder();
+            var segs = buf.ToArraySegments();
+            foreach (var seg in segs )
+            {                
+                sb.Append(string.Join("\r\n", seg));
+                sb.AppendLine("\r\n");
+            }
+            return sb.ToString();
         }
 
     }
