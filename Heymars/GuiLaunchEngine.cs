@@ -14,6 +14,9 @@ using CliWrap.EventStream;
 using Microsoft.VisualBasic.Logging;
 using CircularBuffer;
 using System.Reflection.Metadata;
+using System.Threading;
+using Timer = System.Threading.Timer;
+using System.ServiceModel;
 
 namespace GuiLaunch
 {
@@ -22,11 +25,26 @@ namespace GuiLaunch
         void ProcessStatusChanged(int index, string status);
     }
 
+
     public class RunningCommand
     {
         public string Pid { get; set; }
-        public CircularBuffer<string> OutputBuf = new CircularBuffer<string>(50000); 
+        public CircularBuffer<string> OutputBuf = new CircularBuffer<string>(50000);
+        public List<string> ErrorLines = new List<string>();
+        public Stopwatch Started = new Stopwatch();
+        public int? ExitCode { get; set; }
+        public int StdOutLines { get; set; }
+        public int StdErrLines { get; set; }
+        
     }
+
+    public class CommandStats
+    {
+        // msec
+        public long PrevDuration { get; set; }
+        int PrevLineCount { get; set; }
+    }
+
     public class CommandEntry
     {
         public string c { get; set; }
@@ -49,18 +67,34 @@ namespace GuiLaunch
 
     public class GuiLaunchEngine
     {
+        Timer _timer;
         public CommandEntry[] Commands = null;
         public string Cwd = null;
 
         public Dictionary<int, int> RunningPid = new Dictionary<int, int>();
+
         Dictionary<int, RunningCommand> Running = new Dictionary<int, RunningCommand>();
+        Dictionary<int, CommandStats> Stats = new Dictionary<int, CommandStats>();
 
 
         IProcessEvents _listener = null;
+
+        public GuiLaunchEngine()
+        {
+            _timer = new Timer((o) => RefreshAllStatuses(), null, 1000, 1000);
+        }
+
         public StreamWriter LogStream { get; set; }
 
         public IProcessEvents Listener { get => _listener; set => _listener = value; }
 
+        private string NiceTimeText(long milliseconds)
+        {
+            var t = TimeSpan.FromMilliseconds(milliseconds);
+            if (t.Minutes > 0)
+                return $"{t.Minutes}min {t.Seconds}s";
+            return $"{t.Seconds}s";
+        }
         public static CommandEntry[] ReadTextFile(string fname)
         {
             bool ValidCommand(string s)
@@ -77,12 +111,12 @@ namespace GuiLaunch
             var lines = File.ReadAllLines(fname);
             return lines.Where(ValidCommand).Select(line => new CommandEntry
             {
-                shell= true,
+                shell = true,
                 c = line
 
             }).ToArray();
 
-        } 
+        }
 
         public static ConfigFile ReadJsonFile(string fname)
         {
@@ -103,7 +137,7 @@ namespace GuiLaunch
 
         public async Task Read(string fname)
         {
-           
+
             Cwd = Path.GetDirectoryName(fname);
             ConfigFile configFile = null;
             if (fname.EndsWith(".json"))
@@ -130,6 +164,62 @@ namespace GuiLaunch
         }
 
 
+        private string CalculateStatusString(int index)
+        {
+            // never run
+            if (!Running.ContainsKey(index))
+            {
+                return "";
+            }
+            var running = Running[index];
+            if (running == null)
+            {
+                // never run
+                return "";
+            }
+
+            if (running.ExitCode == 0)
+            {
+                return "ok";
+            }
+
+            var elapsed = running.Started.ElapsedMilliseconds;
+            if (running.ExitCode != null && running.ExitCode != 0)
+            {
+                return $"err {running.ExitCode} {NiceTimeText(elapsed)}";
+
+            }
+
+            // elapsed mode! let's calculate timing etc
+
+
+            var prefix = $"... {NiceTimeText(elapsed)} e:{running.StdErrLines} o:{running.StdOutLines}";
+
+
+            var stat = Stats.GetValueOrDefault(index);
+
+            if (stat == null)
+                return prefix;
+
+            var percent = (int)( ((float) elapsed / stat.PrevDuration) * 100);
+            return $"{prefix} {percent}%";
+        }
+
+
+        private void RefreshSingleStatus(int index)
+        {
+            var s = CalculateStatusString(index);
+            _listener.ProcessStatusChanged(index, s);
+
+        }
+        private void RefreshAllStatuses()
+        {
+            for (int i = 0; i < Commands.Length; i++)
+            {
+                RefreshSingleStatus(i);
+            }
+
+        }
         public async Task Selected(int index, Func<string, string, Task> outputCallback = null)
         {
             var command = Commands[index];
@@ -168,7 +258,10 @@ namespace GuiLaunch
                 .WithWorkingDirectory(cwd)
                 .WithValidation(CommandResultValidation.None);
 
-            Running[index] = new RunningCommand();
+            var running = new RunningCommand();
+            Running[index] = running;
+
+            running.Started = Stopwatch.StartNew();
 
             _listener.ProcessStatusChanged(index, "...");
             int pid = -1;
@@ -178,13 +271,13 @@ namespace GuiLaunch
                 pid = task.ProcessId;
                 RunningPid[index] = pid;
                 var bufout = await task;
-                ReportProcessExit(index, GetExitDesc(bufout.ExitCode, (int)bufout.RunTime.TotalSeconds));
+                ReportProcessExit(index, bufout.ExitCode);
                 await outputCallback(bufout.StandardOutput, bufout.StandardError);
             } else
             {
-                var (exit, secs) = await StreamResults(index, index.ToString(), cmd);
+                var (exit, secs) = await StreamResults(index, index.ToString(), cmd).ConfigureAwait(false);
 
-                ReportProcessExit(index, GetExitDesc(exit, secs));
+                ReportProcessExit(index, exit);
             }
             RunningPid.Remove(index); 
             AnsiConsole.Write(new Markup($"[green] === DONE === [/] [blue]{commandString}[/]\n"));
@@ -192,9 +285,8 @@ namespace GuiLaunch
 
         private async Task<(int ExitCode, int Seconds)> StreamResults(int index, string v, Command cmd)
         {
-
-
-            var buf = Running[index].OutputBuf;
+            var running = Running[index];
+            var buf = running.OutputBuf;
             void write(string title, string color, string text)
             {
                 if (CollectOutput)
@@ -221,10 +313,13 @@ namespace GuiLaunch
                         RunningPid[index] = start.ProcessId;
                         break;
                     case StandardOutputCommandEvent stdOut:
-                        write(v, cname, stdOut.Text); 
+                        write(v, cname, stdOut.Text);
+                        running.StdOutLines++;
                         break;
                     case StandardErrorCommandEvent stdErr:
-                        write(v, "red", stdErr.Text); 
+                        write(v, "red", stdErr.Text);
+                        running.StdErrLines++;
+                        running.ErrorLines.Add(stdErr.Text);
                         break;
                     case ExitedCommandEvent ex:
                         return (ex.ExitCode, 0);
@@ -257,10 +352,17 @@ namespace GuiLaunch
             return message;
 
         }
-        private void ReportProcessExit(int index, string message)
+        private void ReportProcessExit(int index, int exitCode)
         {
-            _listener.ProcessStatusChanged(index, message);
+            var running = Running[index];
+            running.ExitCode = exitCode;
+            running.Started.Stop();
+            Stats[index] = new CommandStats
+            {
+                PrevDuration = running.Started.ElapsedMilliseconds
+            };
 
+            RefreshSingleStatus(index);
         }
 
         private async Task OpenFileInEditor(string fname)
@@ -282,7 +384,7 @@ namespace GuiLaunch
                 try
                 {
                     Process.GetProcessById(pid).Kill(true);
-
+                    ReportProcessExit(index, -999);
                 } catch (ArgumentException)
                 {
                     _listener.ProcessStatusChanged(index, "err?");
@@ -299,16 +401,16 @@ namespace GuiLaunch
             {
                 case Keys.Enter:
                     {
-                        await Selected(index);
+                        await Selected(index).ConfigureAwait(false);
                         break;
                     }
                 case Keys.Space:
                     {
                         await Selected(index, async (o, e) =>
                         {
-                            var err = string.IsNullOrEmpty(e) ? "" : "\n...\nstderr:\n" +e;
+                            var err = string.IsNullOrEmpty(e) ? "" : "\n...\nstderr:\n" + e;
                             await OpenInEditor(o + err);
-                        });
+                        }).ConfigureAwait(false);
                         break;
                     }
                 case Keys.Back:
@@ -350,9 +452,25 @@ namespace GuiLaunch
             {
                 return null;
             }
-            var buf = Running[index]?.OutputBuf;
+
+            var running = Running[index];
+            var buf = running.OutputBuf;
            
+            
             var sb = new StringBuilder();
+            // start with errors...
+
+            if (running.ErrorLines.Count > 0)
+            {
+                sb.AppendLine("==== Stderr lines from whole run start ====");
+                foreach (var line in running.ErrorLines)
+                {
+                    sb.Append("Err: ");
+                    sb.AppendLine(line);
+                }
+                sb.AppendLine("==== Stderr lines end, full output starts ====");
+            }
+
             var segs = buf.ToArraySegments();
             foreach (var seg in segs )
             {                

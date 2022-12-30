@@ -28,13 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.commandGrid = new System.Windows.Forms.DataGridView();
+            this.btnLog = new System.Windows.Forms.Button();
+            this.btnOutput = new System.Windows.Forms.Button();
             this.Index = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Command = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.btnLog = new System.Windows.Forms.Button();
-            this.btnOutput = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.commandGrid)).BeginInit();
             this.SuspendLayout();
             // 
@@ -62,37 +63,12 @@
             this.commandGrid.ShowCellErrors = false;
             this.commandGrid.ShowEditingIcon = false;
             this.commandGrid.ShowRowErrors = false;
-            this.commandGrid.Size = new System.Drawing.Size(1055, 551);
+            this.commandGrid.Size = new System.Drawing.Size(1029, 551);
             this.commandGrid.TabIndex = 2;
             this.commandGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.commandGrid_CellContentClick);
             this.commandGrid.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.commandGrid_RowEnter);
             this.commandGrid.SelectionChanged += new System.EventHandler(this.commandGrid_SelectionChanged);
             this.commandGrid.KeyDown += new System.Windows.Forms.KeyEventHandler(this.commandGrid_KeyDown_1);
-            // 
-            // Index
-            // 
-            this.Index.Frozen = true;
-            this.Index.HeaderText = "#";
-            this.Index.MinimumWidth = 6;
-            this.Index.Name = "Index";
-            this.Index.ReadOnly = true;
-            this.Index.Width = 47;
-            // 
-            // Command
-            // 
-            this.Command.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Command.HeaderText = "Command";
-            this.Command.MinimumWidth = 6;
-            this.Command.Name = "Command";
-            this.Command.ReadOnly = true;
-            // 
-            // Status
-            // 
-            this.Status.HeaderText = "Status";
-            this.Status.MinimumWidth = 6;
-            this.Status.Name = "Status";
-            this.Status.ReadOnly = true;
-            this.Status.Width = 78;
             // 
             // btnLog
             // 
@@ -116,6 +92,34 @@
             this.btnOutput.UseVisualStyleBackColor = true;
             this.btnOutput.Click += new System.EventHandler(this.button1_Click_1);
             // 
+            // Index
+            // 
+            this.Index.Frozen = true;
+            this.Index.HeaderText = "#";
+            this.Index.MinimumWidth = 6;
+            this.Index.Name = "Index";
+            this.Index.ReadOnly = true;
+            this.Index.Width = 47;
+            // 
+            // Command
+            // 
+            this.Command.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Command.HeaderText = "Command";
+            this.Command.MinimumWidth = 6;
+            this.Command.Name = "Command";
+            this.Command.ReadOnly = true;
+            // 
+            // Status
+            // 
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.Status.DefaultCellStyle = dataGridViewCellStyle1;
+            this.Status.HeaderText = "Status";
+            this.Status.MinimumWidth = 200;
+            this.Status.Name = "Status";
+            this.Status.ReadOnly = true;
+            this.Status.Width = 200;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -136,11 +140,11 @@
 
         #endregion
         private System.Windows.Forms.DataGridView commandGrid;
+        private System.Windows.Forms.Button btnLog;
+        private System.Windows.Forms.Button btnOutput;
         private System.Windows.Forms.DataGridViewTextBoxColumn Index;
         private System.Windows.Forms.DataGridViewTextBoxColumn Command;
         private System.Windows.Forms.DataGridViewTextBoxColumn Status;
-        private System.Windows.Forms.Button btnLog;
-        private System.Windows.Forms.Button btnOutput;
     }
 }
 
