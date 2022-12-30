@@ -99,7 +99,8 @@
             this.Index.MinimumWidth = 6;
             this.Index.Name = "Index";
             this.Index.ReadOnly = true;
-            this.Index.Width = 47;
+            this.Index.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Index.Width = 24;
             // 
             // Command
             // 
@@ -108,6 +109,7 @@
             this.Command.MinimumWidth = 6;
             this.Command.Name = "Command";
             this.Command.ReadOnly = true;
+            this.Command.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // Status
             // 
@@ -118,6 +120,7 @@
             this.Status.MinimumWidth = 200;
             this.Status.Name = "Status";
             this.Status.ReadOnly = true;
+            this.Status.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.Status.Width = 200;
             // 
             // Form1

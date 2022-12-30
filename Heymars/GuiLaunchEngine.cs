@@ -11,12 +11,8 @@ using Spectre.Console;
 using System.Text.Json;
 using System.Diagnostics;
 using CliWrap.EventStream;
-using Microsoft.VisualBasic.Logging;
 using CircularBuffer;
-using System.Reflection.Metadata;
-using System.Threading;
 using Timer = System.Threading.Timer;
-using System.ServiceModel;
 
 namespace GuiLaunch
 {
@@ -201,8 +197,9 @@ namespace GuiLaunch
             if (stat == null)
                 return prefix;
 
-            var percent = (int)( ((float) elapsed / stat.PrevDuration) * 100);
-            return $"{prefix} {percent}%";
+            var progress = stat.PrevDuration > elapsed ? $"ETA: {NiceTimeText(stat.PrevDuration - elapsed)}"
+                : $"{(int)((float)elapsed / stat.PrevDuration * 100)}%";
+            return $"{prefix} {progress}";
         }
 
 
@@ -318,8 +315,11 @@ namespace GuiLaunch
                         break;
                     case StandardErrorCommandEvent stdErr:
                         write(v, "red", stdErr.Text);
-                        running.StdErrLines++;
-                        running.ErrorLines.Add(stdErr.Text);
+                        if (stdErr.Text.Length > 0)
+                        {
+                            running.StdErrLines++;
+                            running.ErrorLines.Add(stdErr.Text);
+                        }
                         break;
                     case ExitedCommandEvent ex:
                         return (ex.ExitCode, 0);
@@ -462,13 +462,13 @@ namespace GuiLaunch
 
             if (running.ErrorLines.Count > 0)
             {
-                sb.AppendLine("==== Stderr lines from whole run start ====");
+                sb.AppendLine("// ==== Stderr lines from whole run start ====");
                 foreach (var line in running.ErrorLines)
                 {
-                    sb.Append("Err: ");
-                    sb.AppendLine(line);
+                    if (line.Trim().Length > 0)
+                        sb.AppendLine(line);
                 }
-                sb.AppendLine("==== Stderr lines end, full output starts ====");
+                sb.AppendLine("// ==== Stderr lines end, full output starts ====");
             }
 
             var segs = buf.ToArraySegments();

@@ -3,6 +3,7 @@ using System.Drawing;
 
 namespace Heymars
 {
+#pragma warning disable CA1416
     public static class SciUtil
     {
         public static Scintilla CreateScintilla()
@@ -92,4 +93,5 @@ namespace Heymars
 
         }
     }
+#pragma warning restore CA1416
 }
