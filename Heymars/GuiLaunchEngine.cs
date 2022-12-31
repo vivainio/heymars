@@ -75,9 +75,12 @@ namespace GuiLaunch
 
         IProcessEvents _listener = null;
 
-        public GuiLaunchEngine()
+        public void StartPolling()
         {
             _timer = new Timer((o) => RefreshAllStatuses(), null, 1000, 1000);
+        }
+        public GuiLaunchEngine()
+        {
         }
 
         public StreamWriter LogStream { get; set; }
@@ -206,11 +209,15 @@ namespace GuiLaunch
         private void RefreshSingleStatus(int index)
         {
             var s = CalculateStatusString(index);
-            _listener.ProcessStatusChanged(index, s);
+            _listener?.ProcessStatusChanged(index, s);
 
         }
         private void RefreshAllStatuses()
         {
+            if (Commands == null)
+            {
+                return;
+            }
             for (int i = 0; i < Commands.Length; i++)
             {
                 RefreshSingleStatus(i);
@@ -231,7 +238,7 @@ namespace GuiLaunch
             }
 
             var cwd = !string.IsNullOrEmpty(command.cwd) ? Path.Combine(Cwd, command.cwd) : Cwd;
-            AnsiConsole.Write(new Markup(">>> [blue]" + commandString + "[/]\n"));
+            AnsiConsole.Write(new Markup($">>> {index}: [blue]" + commandString + "[/]\n"));
             Command cmd = null;
             var absbin = Path.Combine(cwd, parts[0]);
             if (command.shell ?? true)
@@ -245,8 +252,12 @@ namespace GuiLaunch
                     AnsiConsole.Write(new Markup($"\n[red]File not found: [/][yellow]{absbin}[/]\n"));
                     return;
                 }
-               
-                cmd = Cli.Wrap(absbin).WithArguments(parts[1]);
+
+                cmd = Cli.Wrap(absbin);
+                if (parts.Length == 2)
+                {
+                    cmd = cmd.WithArguments(parts[1]);
+                }
                 
 
             }
@@ -260,7 +271,7 @@ namespace GuiLaunch
 
             running.Started = Stopwatch.StartNew();
 
-            _listener.ProcessStatusChanged(index, "...");
+            _listener?.ProcessStatusChanged(index, "...");
             int pid = -1;
             if (outputCallback != null)
             {
@@ -445,6 +456,17 @@ namespace GuiLaunch
             await OpenFileInEditor(LogFileName);
             LogStream = null;
         }
+
+        public async Task RunAll()
+        {
+            var tasks = new List<Task>();
+            for (int i = 0; i < Commands.Length; i++)
+            {
+                tasks.Add(Selected(i, null));
+            }
+            await Task.WhenAll(tasks);
+        }
+
 
         public string GetOutput(int index)
         {

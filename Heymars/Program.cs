@@ -9,8 +9,13 @@ namespace GuiLaunch
     {
         [CommandArgument(0, "[ConfigFile]")]
         public string Config { get; set; }
+        [CommandOption("--headless")]
+        public bool Headless { get; set; }
+        [CommandOption("--runall")]
+        public bool RunAll { get; set; }
 
     }
+
 
     public class LauncherCommand : AsyncCommand<LauncherSettings>
     {
@@ -19,7 +24,12 @@ namespace GuiLaunch
         {
             var eng = new GuiLaunchEngine();
             await eng.Read(settings.Config ?? "commands.txt");
-            var form = new Form1(eng);
+            if (settings.Headless)
+            {
+                await eng.RunAll();
+                return 0;
+            }
+            var form = new Form1(eng, settings);
             form.Text = "Heymars " + eng.Cwd;
             Application.Run(form);
             return 0;

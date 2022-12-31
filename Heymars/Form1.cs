@@ -1,5 +1,6 @@
 ﻿using CliWrap;
 using Heymars;
+using Heymars.Properties;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,36 +15,43 @@ namespace GuiLaunch
 {
     public partial class Form1 : Form
     {
-        private readonly EventProcessor eventproc;
-        private readonly GuiLaunchEngine eng;
-
+        private readonly EventProcessor _eventproc;
+        private readonly GuiLaunchEngine _eng;
+        private readonly LauncherSettings _settings;
         private readonly Lazy<OutputViewForm> outputViewForm = new Lazy<OutputViewForm>(() =>  new OutputViewForm());
-        public Form1(GuiLaunchEngine eng)
+        public Form1(GuiLaunchEngine eng, LauncherSettings settings)
         {
             InitializeComponent();
-            this.eventproc = new EventProcessor(commandGrid);
-            this.eng = eng;
-            this.eng.Listener = this.eventproc;
+            this._eventproc = new EventProcessor(commandGrid);
+            this._eng = eng;
+            this._settings = settings;
+            this._eng.Listener = this._eventproc;
 
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            for (int index = 0; index < eng.Commands.Count(); index++)
+            for (int index = 0; index < _eng.Commands.Count(); index++)
             {
-                var c = eng.Commands[index];
+                var c = _eng.Commands[index];
                 int idx = commandGrid.Rows.Add(new[] { (object) index, (string) c.title ?? c.c, "" });
                 commandGrid.Rows[idx].Cells[0].ToolTipText = c.ToString();
 
             }
+            _eng.StartPolling();
+            if (_settings.RunAll)
+            {
+                _eng.RunAll().ContinueWith(t =>
+                {
+                    ;
+                });
+            }
         }
-
-
 
         private async void commandGrid_KeyDown_1(object sender, KeyEventArgs e)
         {
             int index = commandGrid.CurrentCell.RowIndex;
-            var supress = await eng.KeyPress(e.KeyCode, index);
+            var supress = await _eng.KeyPress(e.KeyCode, index);
             e.Handled = supress;
             e.SuppressKeyPress = supress;
             //e.SuppressKeyPress
@@ -62,13 +70,13 @@ namespace GuiLaunch
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (eng.LogStream == null)
+            if (_eng.LogStream == null)
             {
-                eng.StartLog();
+                _eng.StartLog();
                 btnLog.Text = "Stop log";
             } else
             {
-                eng.StopLog();
+                _eng.StopLog();
                 btnLog.Text = "Log";
             }
 
@@ -78,7 +86,7 @@ namespace GuiLaunch
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            eng.CollectOutput = true;
+            _eng.CollectOutput = true;
             outputViewForm.Value.Show();
             outputViewForm.Value.BringToFront();
             ShowOutput(commandGrid.CurrentCell.RowIndex);
@@ -88,12 +96,12 @@ namespace GuiLaunch
         }
         private void ShowOutput(int index)
         {
-            if (!eng.CollectOutput)
+            if (!_eng.CollectOutput)
                 return;
-            var command = eng.Commands[index];
+            var command = _eng.Commands[index];
             var title = command.title ?? command.c;
     
-            var o = eng.GetOutput(index);
+            var o = _eng.GetOutput(index);
             var scintilla = outputViewForm.Value.Scintilla;
             outputViewForm.Value.Text = "Heymars: " + title;
             if (o == null)
@@ -103,7 +111,9 @@ namespace GuiLaunch
             }
 
             SciUtil.SetAllText(scintilla, o);
+#pragma warning disable CA1416 // Validate platform compatibility
             scintilla.ExecuteCmd(ScintillaNET.Command.DocumentEnd);
+#pragma warning restore CA1416 // Validate platform compatibility
 
         }
         private void commandGrid_SelectionChanged(object sender, EventArgs e)
