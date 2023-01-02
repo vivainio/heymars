@@ -31,11 +31,13 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.commandGrid = new System.Windows.Forms.DataGridView();
-            this.btnLog = new System.Windows.Forms.Button();
-            this.btnOutput = new System.Windows.Forms.Button();
             this.Index = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Command = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.btnLog = new System.Windows.Forms.Button();
+            this.btnOutput = new System.Windows.Forms.Button();
+            this.btnCls = new System.Windows.Forms.Button();
+            this.cbSpeak = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.commandGrid)).BeginInit();
             this.SuspendLayout();
             // 
@@ -70,28 +72,6 @@
             this.commandGrid.SelectionChanged += new System.EventHandler(this.commandGrid_SelectionChanged);
             this.commandGrid.KeyDown += new System.Windows.Forms.KeyEventHandler(this.commandGrid_KeyDown_1);
             // 
-            // btnLog
-            // 
-            this.btnLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnLog.Location = new System.Drawing.Point(12, 571);
-            this.btnLog.Name = "btnLog";
-            this.btnLog.Size = new System.Drawing.Size(94, 29);
-            this.btnLog.TabIndex = 3;
-            this.btnLog.Text = "Log";
-            this.btnLog.UseVisualStyleBackColor = true;
-            this.btnLog.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // btnOutput
-            // 
-            this.btnOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnOutput.Location = new System.Drawing.Point(112, 571);
-            this.btnOutput.Name = "btnOutput";
-            this.btnOutput.Size = new System.Drawing.Size(94, 29);
-            this.btnOutput.TabIndex = 4;
-            this.btnOutput.Text = "Output";
-            this.btnOutput.UseVisualStyleBackColor = true;
-            this.btnOutput.Click += new System.EventHandler(this.button1_Click_1);
-            // 
             // Index
             // 
             this.Index.Frozen = true;
@@ -123,11 +103,58 @@
             this.Status.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.Status.Width = 200;
             // 
+            // btnLog
+            // 
+            this.btnLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnLog.Location = new System.Drawing.Point(12, 571);
+            this.btnLog.Name = "btnLog";
+            this.btnLog.Size = new System.Drawing.Size(94, 29);
+            this.btnLog.TabIndex = 3;
+            this.btnLog.Text = "Log";
+            this.btnLog.UseVisualStyleBackColor = true;
+            this.btnLog.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // btnOutput
+            // 
+            this.btnOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnOutput.Location = new System.Drawing.Point(112, 571);
+            this.btnOutput.Name = "btnOutput";
+            this.btnOutput.Size = new System.Drawing.Size(94, 29);
+            this.btnOutput.TabIndex = 4;
+            this.btnOutput.Text = "Output";
+            this.btnOutput.UseVisualStyleBackColor = true;
+            this.btnOutput.Click += new System.EventHandler(this.button1_Click_1);
+            // 
+            // btnCls
+            // 
+            this.btnCls.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnCls.Location = new System.Drawing.Point(212, 571);
+            this.btnCls.Name = "btnCls";
+            this.btnCls.Size = new System.Drawing.Size(94, 29);
+            this.btnCls.TabIndex = 5;
+            this.btnCls.Text = "Cls";
+            this.btnCls.UseVisualStyleBackColor = true;
+            this.btnCls.Click += new System.EventHandler(this.btnCls_Click);
+            // 
+            // cbSpeak
+            // 
+            this.cbSpeak.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbSpeak.AutoSize = true;
+            this.cbSpeak.Location = new System.Drawing.Point(970, 576);
+            this.cbSpeak.Name = "cbSpeak";
+            this.cbSpeak.Size = new System.Drawing.Size(71, 24);
+            this.cbSpeak.TabIndex = 6;
+            this.cbSpeak.Text = "Speak";
+            this.cbSpeak.UseVisualStyleBackColor = true;
+            this.cbSpeak.CheckedChanged += new System.EventHandler(this.cbSpeak_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1053, 612);
+            this.Controls.Add(this.cbSpeak);
+            this.Controls.Add(this.btnCls);
             this.Controls.Add(this.btnOutput);
             this.Controls.Add(this.btnLog);
             this.Controls.Add(this.commandGrid);
@@ -138,6 +165,7 @@
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.commandGrid)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -148,6 +176,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Index;
         private System.Windows.Forms.DataGridViewTextBoxColumn Command;
         private System.Windows.Forms.DataGridViewTextBoxColumn Status;
+        private System.Windows.Forms.Button btnCls;
+        private System.Windows.Forms.CheckBox cbSpeak;
     }
 }
 

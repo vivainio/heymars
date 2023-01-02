@@ -19,15 +19,16 @@ namespace GuiLaunch
     public interface IProcessEvents
     {
         void ProcessStatusChanged(int index, string status);
+        void SpeakStatus(int index, string message);
     }
 
 
     public class RunningCommand
     {
         public string Pid { get; set; }
-        public CircularBuffer<string> OutputBuf = new CircularBuffer<string>(50000);
-        public List<string> ErrorLines = new List<string>();
-        public Stopwatch Started = new Stopwatch();
+        public CircularBuffer<string> OutputBuf = new(50000);
+        public List<string> ErrorLines = new();
+        public Stopwatch Started = null;
         public int? ExitCode { get; set; }
         public int StdOutLines { get; set; }
         public int StdErrLines { get; set; }
@@ -38,7 +39,6 @@ namespace GuiLaunch
     {
         // msec
         public long PrevDuration { get; set; }
-        int PrevLineCount { get; set; }
     }
 
     public class CommandEntry
@@ -67,10 +67,10 @@ namespace GuiLaunch
         public CommandEntry[] Commands = null;
         public string Cwd = null;
 
-        public Dictionary<int, int> RunningPid = new Dictionary<int, int>();
+        public Dictionary<int, int> RunningPid = new();
 
-        Dictionary<int, RunningCommand> Running = new Dictionary<int, RunningCommand>();
-        Dictionary<int, CommandStats> Stats = new Dictionary<int, CommandStats>();
+        Dictionary<int, RunningCommand> Running = new();
+        Dictionary<int, CommandStats> Stats = new();
 
 
         IProcessEvents _listener = null;
@@ -96,7 +96,7 @@ namespace GuiLaunch
         }
         public static CommandEntry[] ReadTextFile(string fname)
         {
-            bool ValidCommand(string s)
+            static bool ValidCommand(string s)
             {
                 if (string.IsNullOrEmpty(s.Trim()))
                 {
@@ -302,11 +302,7 @@ namespace GuiLaunch
                     buf.PushBack(text);
                 }
                 AnsiConsole.Write(new Markup($"[{color}]{title}:[/] {text.EscapeMarkup()}\n"));
-                if (LogStream != null)
-                {
-                    LogStream.WriteLine($"{title}: {text}");
-                    
-                }
+                LogStream?.WriteLine($"{title}: {text}");
 
             }
 
@@ -343,29 +339,11 @@ namespace GuiLaunch
 
         }
 
-        private string GetExitDesc(int exitCode, int secs)
-        {
-            var message = "";
-
-            if (exitCode == 0)
-            {
-                message = $"ok ";
-            }
-            else
-            {
-                message = $"err {exitCode} ";
-            }
-            if (secs > 0)
-            {
-                message += $"{secs}s";
-
-            }
-            return message;
-
-        }
         private void ReportProcessExit(int index, int exitCode)
         {
-            var running = Running[index];
+            var running = Running.GetValueOrDefault(index);
+            if (running == null)
+                return;
             running.ExitCode = exitCode;
             running.Started.Stop();
             Stats[index] = new CommandStats
@@ -374,6 +352,8 @@ namespace GuiLaunch
             };
 
             RefreshSingleStatus(index);
+            var status = exitCode == 0 ? "completed" : "failed";
+            _listener.SpeakStatus(index, $"{status} run {index}");
         }
 
         private async Task OpenFileInEditor(string fname)
@@ -502,5 +482,10 @@ namespace GuiLaunch
             return sb.ToString();
         }
 
+        internal void ClearStatuses()
+        {
+            Running.Clear();
+            RefreshAllStatuses();
+        }
     }
 }

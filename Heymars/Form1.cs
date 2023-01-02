@@ -23,6 +23,7 @@ namespace GuiLaunch
         {
             InitializeComponent();
             this._eventproc = new EventProcessor(commandGrid);
+            _eventproc.ShouldSpeak = ShouldSpeak;
             this._eng = eng;
             this._settings = settings;
             this._eng.Listener = this._eventproc;
@@ -124,6 +125,24 @@ namespace GuiLaunch
         {
           
             ShowOutput(e.RowIndex);
+
+        }
+
+        private void btnCls_Click(object sender, EventArgs e)
+        {
+
+            _eng.ClearStatuses();
+        }
+
+        private bool ShouldSpeak()
+        {
+            if (!cbSpeak.Checked) return false;
+            if (Form.ActiveForm!= null) return false;
+            return true;
+
+        }
+        private void cbSpeak_CheckedChanged(object sender, EventArgs e)
+        {
 
         }
     }
