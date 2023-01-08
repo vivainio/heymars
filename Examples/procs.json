@@ -3,6 +3,8 @@
     "commands": [   {"c": "ls -la"},
         {"c": "pwd"},
         {"c": "pwd", "cwd": "c:/"},
-        {"c": "pwd", "title": "Yet another pwd"}
+        {"c": "pwd", "title": "Yet another pwd"},
+        {"c": "python publish.py", "shell": false, "title": "This will fail because no shell, cant find python"}
+
     ]
 }

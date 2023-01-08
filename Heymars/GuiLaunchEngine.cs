@@ -32,6 +32,7 @@ namespace GuiLaunch
         public int? ExitCode { get; set; }
         public int StdOutLines { get; set; }
         public int StdErrLines { get; set; }
+        public string InternalError { get; set; }
         
     }
 
@@ -176,7 +177,10 @@ namespace GuiLaunch
                 // never run
                 return "";
             }
-
+            if (running.InternalError != null)
+            {
+                return running.InternalError;
+            }
             if (running.ExitCode == 0)
             {
                 return "ok";
@@ -210,8 +214,8 @@ namespace GuiLaunch
         {
             var s = CalculateStatusString(index);
             _listener?.ProcessStatusChanged(index, s);
-
         }
+
         private void RefreshAllStatuses()
         {
             if (Commands == null)
@@ -250,6 +254,10 @@ namespace GuiLaunch
                 if (!File.Exists(absbin))
                 {
                     AnsiConsole.Write(new Markup($"\n[red]File not found: [/][yellow]{absbin}[/]\n"));
+                    Running[index] = new RunningCommand
+                    {
+                        InternalError = "Notfound"
+                    };
                     return;
                 }
 
