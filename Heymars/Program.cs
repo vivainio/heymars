@@ -23,7 +23,7 @@ namespace GuiLaunch
         public override async Task<int> ExecuteAsync(CommandContext context, LauncherSettings settings)
         {
             var eng = new GuiLaunchEngine();
-            await eng.Read(settings.Config ?? "commands.txt");
+            await eng.PopulateFromConfigFile(settings.Config ?? "commands.txt");
             if (settings.Headless)
             {
                 await eng.RunAll();

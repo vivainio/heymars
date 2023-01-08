@@ -7,11 +7,13 @@ namespace GuiLaunch
     public class EventProcessor : IProcessEvents
     {
         private readonly SpeechSynthesizer _synth;
+        private readonly GuiLaunchEngine _eng;
         private readonly DataGridView grid;
         public Func<bool> ShouldSpeak { get; set; }
-        public EventProcessor(DataGridView grid)
+        public EventProcessor(DataGridView grid, GuiLaunchEngine eng)
         {
             _synth = new SpeechSynthesizer();
+            _eng = eng;
             this.grid = grid;
         }
         public void ProcessStatusChanged(int index, string status)
@@ -25,6 +27,11 @@ namespace GuiLaunch
             if (ShouldSpeak == null || !ShouldSpeak())
                 return;
             _synth.SpeakAsync(new Prompt(message));
+        }
+
+        public void RepaintNeeded()
+        {
+            _eng.DrawGrid(grid);
         }
     }
 }

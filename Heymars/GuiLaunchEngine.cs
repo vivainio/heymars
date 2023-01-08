@@ -20,6 +20,8 @@ namespace GuiLaunch
     {
         void ProcessStatusChanged(int index, string status);
         void SpeakStatus(int index, string message);
+        void RepaintNeeded();
+
     }
 
 
@@ -66,6 +68,9 @@ namespace GuiLaunch
     {
         Timer _timer;
         public CommandEntry[] Commands = null;
+
+        public string ConfigFilePath { get; private set; }
+
         public string Cwd = null;
 
         public Dictionary<int, int> RunningPid = new();
@@ -135,9 +140,8 @@ namespace GuiLaunch
 
         }
 
-        public async Task Read(string fname)
+        public async Task PopulateFromConfigFile(string fname)
         {
-
             Cwd = Path.GetDirectoryName(fname);
             ConfigFile configFile = null;
             if (fname.EndsWith(".json"))
@@ -159,7 +163,7 @@ namespace GuiLaunch
 
                 Commands = configFile.commands;
             }
-
+            ConfigFilePath = Path.GetFullPath(fname);
             Cwd = Path.GetFullPath(Cwd);
         }
 
@@ -417,6 +421,12 @@ namespace GuiLaunch
                         KillAtIndex(index);
                         break;
                     }
+                case Keys.F5:
+                    {
+                        await PopulateFromConfigFile(ConfigFilePath);
+                        _listener.RepaintNeeded();
+                        break;
+                    }
                 default:
                     {
                         supress = false;
@@ -426,6 +436,12 @@ namespace GuiLaunch
             }
             return supress;
         }
+
+        private void Refresh()
+        {
+            throw new NotImplementedException();
+        }
+
         string LogFileName => Path.Combine(Cwd, "heymars.log");
 
         public bool CollectOutput { get; internal set; }
@@ -495,5 +511,18 @@ namespace GuiLaunch
             Running.Clear();
             RefreshAllStatuses();
         }
+        public void DrawGrid(DataGridView commandGrid)
+        {
+            commandGrid.Rows.Clear();
+            for (int index = 0; index < Commands.Count(); index++)
+            {
+                var c = Commands[index];
+                int idx = commandGrid.Rows.Add(new[] { (object)index, (string)c.title ?? c.c, "" });
+                commandGrid.Rows[idx].Cells[0].ToolTipText = c.ToString();
+
+            }
+        }
+
+
     }
 }
