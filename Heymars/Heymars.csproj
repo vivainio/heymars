@@ -7,6 +7,14 @@
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
   </PropertyGroup>
   <PropertyGroup>
+    <Authors>vivainio</Authors>
+    <Company />
+    <Copyright>Ville M. Vainio</Copyright>
+    <PackageProjectUrl>https://github.com/vivainio/Heymars</PackageProjectUrl>
+    <PackageLicenseUrl>/blob/master/LICENSE</PackageLicenseUrl>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <ApplicationIcon>heymars.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
