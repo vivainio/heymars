@@ -18,6 +18,9 @@ namespace GuiLaunch
         [CommandOption("--runall")]
         public bool RunAll { get; set; }
 
+        [Description("List of command ids (or indexes) to run immediately, e.g. 'one,two,12,last")]
+        [CommandOption("--run")]
+        public string Run { get; set; }
     }
 
 

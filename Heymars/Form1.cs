@@ -41,6 +41,12 @@ namespace GuiLaunch
                     ;
                 });
             }
+
+            if (_settings.Run != null)
+            {
+                _eng.RunCommands(_settings.Run.Split(",")).ContinueWith(t => { });
+            }
+
         }
 
 

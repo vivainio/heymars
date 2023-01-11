@@ -253,7 +253,7 @@ namespace GuiLaunch
             {
                 Cwd = parts[1];
                 Console.WriteLine($"Cd to: {Cwd}");
-                
+
                 return;
             }
 
@@ -282,7 +282,7 @@ namespace GuiLaunch
                 {
                     cmd = cmd.WithArguments(parts[1]);
                 }
-                
+
 
             }
 
@@ -311,7 +311,7 @@ namespace GuiLaunch
 
                 ReportProcessExit(index, exit);
             }
-            RunningPid.Remove(index); 
+            RunningPid.Remove(index);
             AnsiConsole.Write(new Markup($"[green] === DONE === [/] [blue]{commandString}[/]\n"));
         }
 
@@ -405,7 +405,7 @@ namespace GuiLaunch
                 {
                     _listener.ProcessStatusChanged(index, "err?");
                 }
-                
+
             }
 
         }
@@ -483,6 +483,22 @@ namespace GuiLaunch
             }
             await Task.WhenAll(tasks);
         }
+
+        public async Task RunCommands(IReadOnlyList<string> commandids)
+        {
+            var tasks = new List<Task>();
+
+            for (int i = 0; i < Commands.Length; i++)
+            {
+                var tomatch = Commands[i].id ?? i.ToString();
+                if (commandids.Contains(tomatch))
+                {
+                    tasks.Add(Selected(i, null));
+                }
+            }
+            await Task.WhenAll(tasks);
+        }
+
 
 
         public string GetOutput(int index)
