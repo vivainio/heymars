@@ -46,6 +46,7 @@ namespace GuiLaunch
 
     public class CommandEntry
     {
+        public string id { get; set; }
         public string c { get; set; }
         public string cwd { get; set; }
 
@@ -132,9 +133,16 @@ namespace GuiLaunch
 
         public static async Task<ConfigFile> ReadJsonnetFile(string fname)
         {
-            var o = await Cli.Wrap("jsonnet").WithArguments(fname).ExecuteBufferedAsync();
+            var o = await Cli.Wrap("jsonnet").WithArguments(fname).WithValidation(CommandResultValidation.None).ExecuteBufferedAsync();
             var json = o.StandardOutput;
             AnsiConsole.Write(new Markup($"Jsonnet expansion:\n [blue]{json.EscapeMarkup()}[/]"));
+            if (o.ExitCode != 0)
+            {
+                AnsiConsole.Write(new Markup($"[red]Jsonnet error[/]:\n [blue]{o.StandardError.EscapeMarkup()}[/]"));
+
+
+                return null;
+            }
             return JsonSerializer.Deserialize<ConfigFile>(o.StandardOutput);
 
 
@@ -150,6 +158,10 @@ namespace GuiLaunch
             } else if (fname.EndsWith(".jsonnet"))
             {
                 configFile = await ReadJsonnetFile(fname);
+                if (configFile == null)
+                {
+                    return;
+                }
             }
             else {
                 Commands = ReadTextFile(fname);
@@ -295,7 +307,7 @@ namespace GuiLaunch
                 await outputCallback(bufout.StandardOutput, bufout.StandardError);
             } else
             {
-                var (exit, secs) = await StreamResults(index, index.ToString(), cmd).ConfigureAwait(false);
+                var (exit, secs) = await StreamResults(index, command.id ?? index.ToString(), cmd).ConfigureAwait(false);
 
                 ReportProcessExit(index, exit);
             }
@@ -320,6 +332,7 @@ namespace GuiLaunch
 
             Color ocolor = index % 14 + 2;
             var cname = ocolor.ToMarkup();
+            cmd = cmd.WithStandardInputPipe(PipeSource.FromStream(Console.OpenStandardInput()));
             await foreach (var cmdEvent in cmd.ListenAsync())
             {
                 switch (cmdEvent)
@@ -517,12 +530,10 @@ namespace GuiLaunch
             for (int index = 0; index < Commands.Count(); index++)
             {
                 var c = Commands[index];
-                int idx = commandGrid.Rows.Add(new[] { (object)index, (string)c.title ?? c.c, "" });
+                int idx = commandGrid.Rows.Add(new[] { c.id ?? (object)index, (string)c.title ?? c.c, "" });
                 commandGrid.Rows[idx].Cells[0].ToolTipText = c.ToString();
 
             }
         }
-
-
     }
 }

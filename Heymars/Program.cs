@@ -28,6 +28,11 @@ namespace GuiLaunch
         {
             var eng = new GuiLaunchEngine();
             await eng.PopulateFromConfigFile(settings.Config);
+            if (eng.Commands == null)
+            {
+                Console.WriteLine("No commands, exiting");
+                return 1;
+            }
             if (settings.Headless)
             {
                 await eng.RunAll();

@@ -32,7 +32,7 @@ namespace GuiLaunch
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            DrawGrid(commandGrid);
+            _eng.DrawGrid(commandGrid);
             _eng.StartPolling();
             if (_settings.RunAll)
             {
@@ -43,16 +43,6 @@ namespace GuiLaunch
             }
         }
 
-        private void DrawGrid(DataGridView commandGrid)
-        {
-            for (int index = 0; index < _eng.Commands.Count(); index++)
-            {
-                var c = _eng.Commands[index];
-                int idx = commandGrid.Rows.Add(new[] { (object)index, (string)c.title ?? c.c, "" });
-                commandGrid.Rows[idx].Cells[0].ToolTipText = c.ToString();
-
-            }
-        }
 
         private async void commandGrid_KeyDown_1(object sender, KeyEventArgs e)
         {
