@@ -38,7 +38,13 @@ namespace GuiLaunch
             }
             if (settings.Headless)
             {
-                await eng.RunAll();
+                if (settings.Run != null)
+                {
+                    await eng.RunCommands(settings.Run.Split(","));
+                } else
+                {
+                    await eng.RunAll();
+                }
                 return 0;
             }
             var form = new Form1(eng, settings);
