@@ -3,7 +3,7 @@ from __future__ import print_function
 import os, shutil, glob
 
 prjdir = "Heymars"
-version = "1.0"
+version = "1.1"
 
 
 def c(s):

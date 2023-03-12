@@ -259,9 +259,9 @@ namespace GuiLaunch
             var parts = commandString.Split(new char[] { ' ' }, 2);
             if (parts[0] == "cd")
             {
-                Cwd = parts[1];
-                Console.WriteLine($"Cd to: {Cwd}");
-
+                var oldCwd = Cwd;
+                Cwd = Path.GetFullPath(Path.Combine(Cwd, parts[1]));
+                Console.WriteLine($"Cd to: {Cwd} (old was '{oldCwd})");
                 return;
             }
 
