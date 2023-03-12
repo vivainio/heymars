@@ -142,7 +142,6 @@
             cbSpeak.TabIndex = 6;
             cbSpeak.Text = "Speak";
             cbSpeak.UseVisualStyleBackColor = true;
-            cbSpeak.CheckedChanged += cbSpeak_CheckedChanged;
             // 
             // linkHelp
             // 

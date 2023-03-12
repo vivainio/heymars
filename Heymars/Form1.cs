@@ -144,20 +144,10 @@ namespace GuiLaunch
             return true;
 
         }
-        private void cbSpeak_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button1_Click_2(object sender, EventArgs e)
-        {
-
-        }
 
         private void linkHelp_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             var url = "https://github.com/vivainio/heymars/blob/main/doc/quickref.md";
-
 
             var ps = new ProcessStartInfo
             {
