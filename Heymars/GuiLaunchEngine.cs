@@ -52,6 +52,8 @@ namespace GuiLaunch
 
         public string title { get; set; }
         public bool? shell { get; set; }
+        public string fgcolor { get; set; }
+        public string bgcolor { get; set; }
         public override string ToString()
         {
             return c + (cwd == null ? "" : " || Cwd: " + cwd);  
@@ -247,6 +249,12 @@ namespace GuiLaunch
         public async Task Selected(int index, Func<string, string, Task> outputCallback = null)
         {
             var command = Commands[index];
+            if (command?.c == null)
+            {
+                // e.g. comments don't have 'c' attribute
+                return;
+
+            }
             var commandString = command.c;
             var parts = commandString.Split(new char[] { ' ' }, 2);
             if (parts[0] == "cd")
@@ -540,8 +548,30 @@ namespace GuiLaunch
             Running.Clear();
             RefreshAllStatuses();
         }
+
+        private void StyleRow(CommandEntry command, DataGridViewCellStyle defaultCellStyle)
+        {
+            if (command.fgcolor != null)
+            {
+                defaultCellStyle.ForeColor = System.Drawing.Color.FromName(command.fgcolor);
+
+            }
+            if (command.bgcolor != null) 
+            {
+                defaultCellStyle.BackColor = System.Drawing.Color.FromName(command.bgcolor);
+
+            }
+
+
+        }
         public void DrawGrid(DataGridView commandGrid)
         {
+            commandGrid.RowPrePaint
+                += (sender, e) =>
+                {
+                    var command = Commands[e.RowIndex];
+                    StyleRow(command, commandGrid.Rows[e.RowIndex].DefaultCellStyle);
+                };
             commandGrid.Rows.Clear();
             for (int index = 0; index < Commands.Count(); index++)
             {
