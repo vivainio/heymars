@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -18,7 +19,7 @@ namespace GuiLaunch
         private readonly EventProcessor _eventproc;
         private readonly GuiLaunchEngine _eng;
         private readonly LauncherSettings _settings;
-        private readonly Lazy<OutputViewForm> outputViewForm = new Lazy<OutputViewForm>(() =>  new OutputViewForm());
+        private readonly Lazy<OutputViewForm> outputViewForm = new Lazy<OutputViewForm>(() => new OutputViewForm());
         public Form1(GuiLaunchEngine eng, LauncherSettings settings)
         {
             InitializeComponent();
@@ -76,7 +77,8 @@ namespace GuiLaunch
             {
                 _eng.StartLog();
                 btnLog.Text = "Stop log";
-            } else
+            }
+            else
             {
                 _eng.StopLog();
                 btnLog.Text = "Log";
@@ -92,8 +94,8 @@ namespace GuiLaunch
             outputViewForm.Value.Show();
             outputViewForm.Value.BringToFront();
             ShowOutput(commandGrid.CurrentCell.RowIndex);
-           
-            
+
+
 
         }
         private void ShowOutput(int index)
@@ -102,7 +104,7 @@ namespace GuiLaunch
                 return;
             var command = _eng.Commands[index];
             var title = command.title ?? command.c;
-    
+
             var o = _eng.GetOutput(index);
             var scintilla = outputViewForm.Value.Scintilla;
             outputViewForm.Value.Text = "Heymars: " + title;
@@ -124,7 +126,7 @@ namespace GuiLaunch
 
         private void commandGrid_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
-          
+
             ShowOutput(e.RowIndex);
 
         }
@@ -138,12 +140,31 @@ namespace GuiLaunch
         private bool ShouldSpeak()
         {
             if (!cbSpeak.Checked) return false;
-            if (Form.ActiveForm!= null) return false;
+            if (Form.ActiveForm != null) return false;
             return true;
 
         }
         private void cbSpeak_CheckedChanged(object sender, EventArgs e)
         {
+
+        }
+
+        private void button1_Click_2(object sender, EventArgs e)
+        {
+
+        }
+
+        private void linkHelp_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            var url = "https://github.com/vivainio/heymars/blob/main/doc/quickref.md";
+
+
+            var ps = new ProcessStartInfo
+            {
+                FileName = url,
+                UseShellExecute = true
+            };
+            System.Diagnostics.Process.Start(ps);
 
         }
     }

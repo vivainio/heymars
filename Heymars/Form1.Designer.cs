@@ -30,143 +30,151 @@
         {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this.commandGrid = new System.Windows.Forms.DataGridView();
-            this.Index = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Command = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.btnLog = new System.Windows.Forms.Button();
-            this.btnOutput = new System.Windows.Forms.Button();
-            this.btnCls = new System.Windows.Forms.Button();
-            this.cbSpeak = new System.Windows.Forms.CheckBox();
-            ((System.ComponentModel.ISupportInitialize)(this.commandGrid)).BeginInit();
-            this.SuspendLayout();
+            commandGrid = new System.Windows.Forms.DataGridView();
+            Index = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            Command = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            btnLog = new System.Windows.Forms.Button();
+            btnOutput = new System.Windows.Forms.Button();
+            btnCls = new System.Windows.Forms.Button();
+            cbSpeak = new System.Windows.Forms.CheckBox();
+            linkHelp = new System.Windows.Forms.LinkLabel();
+            ((System.ComponentModel.ISupportInitialize)commandGrid).BeginInit();
+            SuspendLayout();
             // 
             // commandGrid
             // 
-            this.commandGrid.AllowUserToAddRows = false;
-            this.commandGrid.AllowUserToDeleteRows = false;
-            this.commandGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.commandGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
-            this.commandGrid.BackgroundColor = System.Drawing.SystemColors.Control;
-            this.commandGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.commandGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Index,
-            this.Command,
-            this.Status});
-            this.commandGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.commandGrid.Location = new System.Drawing.Point(12, 13);
-            this.commandGrid.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.commandGrid.Name = "commandGrid";
-            this.commandGrid.RowHeadersVisible = false;
-            this.commandGrid.RowHeadersWidth = 51;
-            this.commandGrid.RowTemplate.Height = 24;
-            this.commandGrid.ShowCellErrors = false;
-            this.commandGrid.ShowEditingIcon = false;
-            this.commandGrid.ShowRowErrors = false;
-            this.commandGrid.Size = new System.Drawing.Size(1029, 551);
-            this.commandGrid.TabIndex = 2;
-            this.commandGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.commandGrid_CellContentClick);
-            this.commandGrid.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.commandGrid_RowEnter);
-            this.commandGrid.SelectionChanged += new System.EventHandler(this.commandGrid_SelectionChanged);
-            this.commandGrid.KeyDown += new System.Windows.Forms.KeyEventHandler(this.commandGrid_KeyDown_1);
+            commandGrid.AllowUserToAddRows = false;
+            commandGrid.AllowUserToDeleteRows = false;
+            commandGrid.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            commandGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            commandGrid.BackgroundColor = System.Drawing.SystemColors.Control;
+            commandGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            commandGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] { Index, Command, Status });
+            commandGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            commandGrid.Location = new System.Drawing.Point(12, 13);
+            commandGrid.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            commandGrid.Name = "commandGrid";
+            commandGrid.RowHeadersVisible = false;
+            commandGrid.RowHeadersWidth = 51;
+            commandGrid.RowTemplate.Height = 24;
+            commandGrid.ShowCellErrors = false;
+            commandGrid.ShowEditingIcon = false;
+            commandGrid.ShowRowErrors = false;
+            commandGrid.Size = new System.Drawing.Size(1029, 551);
+            commandGrid.TabIndex = 2;
+            commandGrid.CellContentClick += commandGrid_CellContentClick;
+            commandGrid.RowEnter += commandGrid_RowEnter;
+            commandGrid.SelectionChanged += commandGrid_SelectionChanged;
+            commandGrid.KeyDown += commandGrid_KeyDown_1;
             // 
             // Index
             // 
-            this.Index.Frozen = true;
-            this.Index.HeaderText = "#";
-            this.Index.MinimumWidth = 6;
-            this.Index.Name = "Index";
-            this.Index.ReadOnly = true;
-            this.Index.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.Index.Width = 24;
+            Index.Frozen = true;
+            Index.HeaderText = "#";
+            Index.MinimumWidth = 6;
+            Index.Name = "Index";
+            Index.ReadOnly = true;
+            Index.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            Index.Width = 24;
             // 
             // Command
             // 
-            this.Command.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Command.HeaderText = "Command";
-            this.Command.MinimumWidth = 6;
-            this.Command.Name = "Command";
-            this.Command.ReadOnly = true;
-            this.Command.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            Command.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            Command.HeaderText = "Command";
+            Command.MinimumWidth = 6;
+            Command.Name = "Command";
+            Command.ReadOnly = true;
+            Command.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // Status
             // 
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.Status.DefaultCellStyle = dataGridViewCellStyle1;
-            this.Status.HeaderText = "Status";
-            this.Status.MinimumWidth = 200;
-            this.Status.Name = "Status";
-            this.Status.ReadOnly = true;
-            this.Status.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.Status.Width = 200;
+            Status.DefaultCellStyle = dataGridViewCellStyle1;
+            Status.HeaderText = "Status";
+            Status.MinimumWidth = 200;
+            Status.Name = "Status";
+            Status.ReadOnly = true;
+            Status.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            Status.Width = 200;
             // 
             // btnLog
             // 
-            this.btnLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnLog.Location = new System.Drawing.Point(12, 571);
-            this.btnLog.Name = "btnLog";
-            this.btnLog.Size = new System.Drawing.Size(94, 29);
-            this.btnLog.TabIndex = 3;
-            this.btnLog.Text = "Log";
-            this.btnLog.UseVisualStyleBackColor = true;
-            this.btnLog.Click += new System.EventHandler(this.button1_Click);
+            btnLog.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            btnLog.Location = new System.Drawing.Point(12, 571);
+            btnLog.Name = "btnLog";
+            btnLog.Size = new System.Drawing.Size(94, 29);
+            btnLog.TabIndex = 3;
+            btnLog.Text = "Log";
+            btnLog.UseVisualStyleBackColor = true;
+            btnLog.Click += button1_Click;
             // 
             // btnOutput
             // 
-            this.btnOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnOutput.Location = new System.Drawing.Point(112, 571);
-            this.btnOutput.Name = "btnOutput";
-            this.btnOutput.Size = new System.Drawing.Size(94, 29);
-            this.btnOutput.TabIndex = 4;
-            this.btnOutput.Text = "Output";
-            this.btnOutput.UseVisualStyleBackColor = true;
-            this.btnOutput.Click += new System.EventHandler(this.button1_Click_1);
+            btnOutput.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            btnOutput.Location = new System.Drawing.Point(112, 571);
+            btnOutput.Name = "btnOutput";
+            btnOutput.Size = new System.Drawing.Size(94, 29);
+            btnOutput.TabIndex = 4;
+            btnOutput.Text = "Output";
+            btnOutput.UseVisualStyleBackColor = true;
+            btnOutput.Click += button1_Click_1;
             // 
             // btnCls
             // 
-            this.btnCls.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnCls.Location = new System.Drawing.Point(212, 571);
-            this.btnCls.Name = "btnCls";
-            this.btnCls.Size = new System.Drawing.Size(94, 29);
-            this.btnCls.TabIndex = 5;
-            this.btnCls.Text = "Cls";
-            this.btnCls.UseVisualStyleBackColor = true;
-            this.btnCls.Click += new System.EventHandler(this.btnCls_Click);
+            btnCls.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            btnCls.Location = new System.Drawing.Point(212, 571);
+            btnCls.Name = "btnCls";
+            btnCls.Size = new System.Drawing.Size(94, 29);
+            btnCls.TabIndex = 5;
+            btnCls.Text = "Cls";
+            btnCls.UseVisualStyleBackColor = true;
+            btnCls.Click += btnCls_Click;
             // 
             // cbSpeak
             // 
-            this.cbSpeak.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cbSpeak.AutoSize = true;
-            this.cbSpeak.Location = new System.Drawing.Point(970, 576);
-            this.cbSpeak.Name = "cbSpeak";
-            this.cbSpeak.Size = new System.Drawing.Size(71, 24);
-            this.cbSpeak.TabIndex = 6;
-            this.cbSpeak.Text = "Speak";
-            this.cbSpeak.UseVisualStyleBackColor = true;
-            this.cbSpeak.CheckedChanged += new System.EventHandler(this.cbSpeak_CheckedChanged);
+            cbSpeak.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            cbSpeak.AutoSize = true;
+            cbSpeak.Location = new System.Drawing.Point(948, 578);
+            cbSpeak.Name = "cbSpeak";
+            cbSpeak.Size = new System.Drawing.Size(71, 24);
+            cbSpeak.TabIndex = 6;
+            cbSpeak.Text = "Speak";
+            cbSpeak.UseVisualStyleBackColor = true;
+            cbSpeak.CheckedChanged += cbSpeak_CheckedChanged;
+            // 
+            // linkHelp
+            // 
+            linkHelp.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            linkHelp.AutoSize = true;
+            linkHelp.Location = new System.Drawing.Point(312, 575);
+            linkHelp.Name = "linkHelp";
+            linkHelp.Size = new System.Drawing.Size(16, 20);
+            linkHelp.TabIndex = 7;
+            linkHelp.TabStop = true;
+            linkHelp.Text = "?";
+            linkHelp.LinkClicked += linkHelp_LinkClicked;
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1053, 612);
-            this.Controls.Add(this.cbSpeak);
-            this.Controls.Add(this.btnCls);
-            this.Controls.Add(this.btnOutput);
-            this.Controls.Add(this.btnLog);
-            this.Controls.Add(this.commandGrid);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.Name = "Form1";
-            this.Text = "Heymars";
-            this.Load += new System.EventHandler(this.Form1_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.commandGrid)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(1053, 612);
+            Controls.Add(linkHelp);
+            Controls.Add(cbSpeak);
+            Controls.Add(btnCls);
+            Controls.Add(btnOutput);
+            Controls.Add(btnLog);
+            Controls.Add(commandGrid);
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+            Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            Name = "Form1";
+            Text = "Heymars";
+            Load += Form1_Load;
+            ((System.ComponentModel.ISupportInitialize)commandGrid).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -178,6 +186,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Status;
         private System.Windows.Forms.Button btnCls;
         private System.Windows.Forms.CheckBox cbSpeak;
+        private System.Windows.Forms.LinkLabel linkHelp;
     }
 }
 
