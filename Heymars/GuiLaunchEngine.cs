@@ -13,6 +13,7 @@ using System.Diagnostics;
 using CliWrap.EventStream;
 using CircularBuffer;
 using Timer = System.Threading.Timer;
+using System.Threading;
 
 namespace GuiLaunch
 {

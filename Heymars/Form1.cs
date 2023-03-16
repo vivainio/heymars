@@ -33,6 +33,7 @@ namespace GuiLaunch
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            _eng.PopulateFileList(cbCurrentConfig);
             _eng.DrawGrid(commandGrid);
             _eng.StartPolling();
             if (_settings.RunAll)
