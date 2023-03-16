@@ -39,6 +39,9 @@
             btnCls = new System.Windows.Forms.Button();
             cbSpeak = new System.Windows.Forms.CheckBox();
             linkHelp = new System.Windows.Forms.LinkLabel();
+            lblDesc = new System.Windows.Forms.Label();
+            btnEdit = new System.Windows.Forms.Button();
+            cbCurrentConfig = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)commandGrid).BeginInit();
             SuspendLayout();
             // 
@@ -52,16 +55,17 @@
             commandGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             commandGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] { Index, Command, Status });
             commandGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            commandGrid.Location = new System.Drawing.Point(12, 13);
+            commandGrid.Location = new System.Drawing.Point(12, 42);
             commandGrid.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             commandGrid.Name = "commandGrid";
             commandGrid.RowHeadersVisible = false;
             commandGrid.RowHeadersWidth = 51;
             commandGrid.RowTemplate.Height = 24;
             commandGrid.ShowCellErrors = false;
+            commandGrid.ShowCellToolTips = false;
             commandGrid.ShowEditingIcon = false;
             commandGrid.ShowRowErrors = false;
-            commandGrid.Size = new System.Drawing.Size(1029, 551);
+            commandGrid.Size = new System.Drawing.Size(1029, 495);
             commandGrid.TabIndex = 2;
             commandGrid.CellContentClick += commandGrid_CellContentClick;
             commandGrid.RowEnter += commandGrid_RowEnter;
@@ -147,7 +151,7 @@
             // 
             linkHelp.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             linkHelp.AutoSize = true;
-            linkHelp.Location = new System.Drawing.Point(312, 575);
+            linkHelp.Location = new System.Drawing.Point(412, 575);
             linkHelp.Name = "linkHelp";
             linkHelp.Size = new System.Drawing.Size(16, 20);
             linkHelp.TabIndex = 7;
@@ -155,11 +159,46 @@
             linkHelp.Text = "?";
             linkHelp.LinkClicked += linkHelp_LinkClicked;
             // 
+            // lblDesc
+            // 
+            lblDesc.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            lblDesc.AutoSize = true;
+            lblDesc.Location = new System.Drawing.Point(12, 541);
+            lblDesc.Name = "lblDesc";
+            lblDesc.Size = new System.Drawing.Size(50, 20);
+            lblDesc.TabIndex = 8;
+            lblDesc.Text = "label1";
+            // 
+            // btnEdit
+            // 
+            btnEdit.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            btnEdit.Location = new System.Drawing.Point(312, 571);
+            btnEdit.Name = "btnEdit";
+            btnEdit.Size = new System.Drawing.Size(94, 29);
+            btnEdit.TabIndex = 9;
+            btnEdit.Text = "Edit";
+            btnEdit.UseVisualStyleBackColor = true;
+            btnEdit.Click += btnEdit_Click;
+            // 
+            // cbCurrentConfig
+            // 
+            cbCurrentConfig.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            cbCurrentConfig.FormattingEnabled = true;
+            cbCurrentConfig.Location = new System.Drawing.Point(12, 7);
+            cbCurrentConfig.Name = "cbCurrentConfig";
+            cbCurrentConfig.Size = new System.Drawing.Size(1025, 28);
+            cbCurrentConfig.TabIndex = 10;
+            cbCurrentConfig.SelectedIndexChanged += cbCurrentConfig_SelectedIndexChanged;
+
+            // 
             // Form1
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(1053, 612);
+            Controls.Add(cbCurrentConfig);
+            Controls.Add(btnEdit);
+            Controls.Add(lblDesc);
             Controls.Add(linkHelp);
             Controls.Add(cbSpeak);
             Controls.Add(btnCls);
@@ -186,6 +225,9 @@
         private System.Windows.Forms.Button btnCls;
         private System.Windows.Forms.CheckBox cbSpeak;
         private System.Windows.Forms.LinkLabel linkHelp;
+        private System.Windows.Forms.Label lblDesc;
+        private System.Windows.Forms.Button btnEdit;
+        private System.Windows.Forms.ComboBox cbCurrentConfig;
     }
 }
 

@@ -100,6 +100,8 @@ namespace GuiLaunch
         }
         private void ShowOutput(int index)
         {
+            var label = _eng.GetLabel(index);
+            lblDesc.Text = label;
             if (!_eng.CollectOutput)
                 return;
             var command = _eng.Commands[index];
@@ -126,7 +128,7 @@ namespace GuiLaunch
 
         private void commandGrid_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
-
+            lblDesc.Text = e.RowIndex.ToString();
             ShowOutput(e.RowIndex);
 
         }
@@ -155,6 +157,12 @@ namespace GuiLaunch
                 UseShellExecute = true
             };
             System.Diagnostics.Process.Start(ps);
+
+        }
+
+        private void btnEdit_Click(object sender, EventArgs e)
+        {
+            var t = _eng.OpenFileInEditor(_eng.ConfigFilePath);
 
         }
     }

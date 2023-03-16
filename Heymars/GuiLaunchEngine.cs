@@ -16,6 +16,37 @@ using Timer = System.Threading.Timer;
 
 namespace GuiLaunch
 {
+    public class StoredSettings
+    {
+        public List<string> history { get; set; }
+    }
+
+    public class SettingsStorage
+    {
+        public string Location => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "heymars", "settings.json"); 
+        public void LoadAndModify(Action<StoredSettings> modify)
+        {
+            StoredSettings storedSettings;
+            if (!File.Exists(Location))
+            {
+                storedSettings = new StoredSettings
+                {
+                    history = new List<string>()
+                };
+                Directory.CreateDirectory(Path.GetDirectoryName(Location));
+            } else
+            {
+                var cont = File.ReadAllBytes(Location);
+
+                storedSettings = JsonSerializer.Deserialize<StoredSettings>(cont);
+                storedSettings.history ??= new List<string>();
+
+            }
+            modify(storedSettings);
+            var newCont = JsonSerializer.SerializeToUtf8Bytes(storedSettings);
+            File.WriteAllBytes(Location, newCont);
+        }
+    }
     public interface IProcessEvents
     {
         void ProcessStatusChanged(int index, string status);
@@ -44,23 +75,6 @@ namespace GuiLaunch
         public long PrevDuration { get; set; }
     }
 
-    public class CommandEntry
-    {
-        public string id { get; set; }
-        public string c { get; set; }
-        public string cwd { get; set; }
-
-        public string title { get; set; }
-        public bool? shell { get; set; }
-        public string fgcolor { get; set; }
-        public string bgcolor { get; set; }
-        public override string ToString()
-        {
-            return c + (cwd == null ? "" : " || Cwd: " + cwd);  
-        }
-
-    }
-
     public class ConfigFile
     {
         public CommandEntry[] commands { get; set; }
@@ -71,7 +85,7 @@ namespace GuiLaunch
     {
         Timer _timer;
         public CommandEntry[] Commands = null;
-
+        CancellationTokenSource _cts = new CancellationTokenSource();
         public string ConfigFilePath { get; private set; }
 
         public string Cwd = null;
@@ -179,6 +193,7 @@ namespace GuiLaunch
             }
             ConfigFilePath = Path.GetFullPath(fname);
             Cwd = Path.GetFullPath(Cwd);
+            _listener?.RepaintNeeded();
         }
 
 
@@ -249,6 +264,14 @@ namespace GuiLaunch
         public async Task Selected(int index, Func<string, string, Task> outputCallback = null)
         {
             var command = Commands[index];
+            if (command.runtags != null)
+            {
+                var tagged = FindTaggedCommands(command.runtags);
+                foreach (var i in tagged)
+                {
+                    var t = Selected(i);
+                }
+            }
             if (command?.c == null)
             {
                 // e.g. comments don't have 'c' attribute
@@ -323,6 +346,23 @@ namespace GuiLaunch
             AnsiConsole.Write(new Markup($"[green] === DONE === [/] [blue]{commandString}[/]\n"));
         }
 
+        private List<int> FindTaggedCommands(List<string> tags)
+        {
+            int i = 0;
+
+            var ts = new List<int>();
+            foreach (var command in Commands)
+            {
+                if (command?.tags != null && command.tags.Intersect(tags).Any())
+                {
+
+                    ts.Add(i);                    
+                }
+                i++;
+            }
+            return ts;
+        }
+
         private async Task<(int ExitCode, int Seconds)> StreamResults(int index, string v, Command cmd)
         {
             var running = Running[index];
@@ -341,7 +381,7 @@ namespace GuiLaunch
             Color ocolor = index % 14 + 2;
             var cname = ocolor.ToMarkup();
             cmd = cmd.WithStandardInputPipe(PipeSource.FromStream(Console.OpenStandardInput()));
-            await foreach (var cmdEvent in cmd.ListenAsync())
+            await foreach (var cmdEvent in cmd.ListenAsync(_cts.Token))
             {
                 switch (cmdEvent)
                 {
@@ -389,7 +429,7 @@ namespace GuiLaunch
             _listener.SpeakStatus(index, $"{status} run {index}");
         }
 
-        private async Task OpenFileInEditor(string fname)
+        public async Task OpenFileInEditor(string fname)
         {
             await Cli.Wrap("code").WithArguments(fname).ExecuteAsync();
         }
@@ -415,6 +455,18 @@ namespace GuiLaunch
                 }
 
             }
+
+            var command = Commands[index];
+            if (command.runtags != null)
+            {
+                var indexes = FindTaggedCommands(command.runtags);
+                foreach(var i in indexes)
+                {
+                    KillAtIndex(i);
+                }
+
+            }
+
 
         }
         internal async Task<bool> KeyPress(Keys keyChar, int index)
@@ -445,7 +497,6 @@ namespace GuiLaunch
                 case Keys.F5:
                     {
                         await PopulateFromConfigFile(ConfigFilePath);
-                        _listener.RepaintNeeded();
                         break;
                     }
                 default:
@@ -508,12 +559,32 @@ namespace GuiLaunch
         }
 
 
+        private static readonly JsonSerializerOptions jsonOptions = new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+            
+        };
 
+        public string GetLabel(int index)
+        {
+            var command = Commands[index];
+            if (command.c != null)
+            {
+                return command.c;
+            } 
+            if (command.runtags != null)
+            {
+                return "Run tags: " + string.Join(", ", command.runtags);
+            }
+            return command.c ?? "no c";
+        }
         public string GetOutput(int index)
         {
             if (!Running.ContainsKey(index))
             {
-                return null;
+                var command = Commands[index];
+                return JsonizeCommand(command);
             }
 
             var running = Running[index];
@@ -541,6 +612,11 @@ namespace GuiLaunch
                 sb.AppendLine("\r\n");
             }
             return sb.ToString();
+        }
+
+        private string JsonizeCommand(CommandEntry command)
+        {
+            return JsonSerializer.Serialize(command, jsonOptions);
         }
 
         internal void ClearStatuses()
@@ -576,10 +652,22 @@ namespace GuiLaunch
             for (int index = 0; index < Commands.Count(); index++)
             {
                 var c = Commands[index];
-                int idx = commandGrid.Rows.Add(new[] { c.id ?? (object)index, (string)c.title ?? c.c, "" });
-                commandGrid.Rows[idx].Cells[0].ToolTipText = c.ToString();
+                commandGrid.Rows.Add(new[] { c.id ?? (object)index, (string)c.title ?? c.c, "" });
 
             }
+        }
+
+        internal void PopulateFileList(ComboBox cbCurrentConfig)
+        {
+            var storage = new SettingsStorage();
+            storage.LoadAndModify((settings) =>
+            {
+                // move to first
+                settings.history.Remove(ConfigFilePath);
+                settings.history.Insert(0, ConfigFilePath);
+                cbCurrentConfig.Items.AddRange(settings.history.ToArray());
+            });
+            cbCurrentConfig.SelectedIndex = 0;
         }
     }
 }
