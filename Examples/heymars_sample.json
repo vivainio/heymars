@@ -1,0 +1,50 @@
+{
+   "commands": [
+      {
+         "fgcolor": "Blue",
+         "id": "",
+         "runtags": [
+            "build"
+         ],
+         "title": "Basic heymars commands"
+      },
+      {
+         "c": "dotnet build -c release Heymars.sln",
+         "matchers": [
+            {
+               "log": true,
+               "patterns": [
+                  "^.*\\(\\d+,\\d+\\): error [A-Z]+\\d+: .*"
+               ],
+               "say": "Build failed",
+               "status": "Build error"
+            }
+         ],
+         "shell": true,
+         "tags": [
+            "build"
+         ],
+         "title": "Release build"
+      },
+      {
+         "c": "jsonnet heymars_sample.jsonnet -o heymars_sample.json",
+         "cwd": "Examples",
+         "shell": true,
+         "tags": [
+            "build"
+         ]
+      },
+      {
+         "c": "npx quicktype heymars_sample.json --just-types --out=heymars_schema.ts",
+         "cwd": "Examples",
+         "shell": true,
+         "title": "Create type definition with quicktype"
+      },
+      {
+         "bgcolor": "yellow",
+         "c": "code Examples/heymars_schema.ts",
+         "shell": true
+      }
+   ],
+   "root": ".."
+}
