@@ -188,7 +188,7 @@
             cbCurrentConfig.Name = "cbCurrentConfig";
             cbCurrentConfig.Size = new System.Drawing.Size(1025, 28);
             cbCurrentConfig.TabIndex = 10;
-
+            cbCurrentConfig.SelectedIndexChanged += cbCurrentConfig_SelectedIndexChanged;
             // 
             // Form1
             // 

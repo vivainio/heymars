@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace GuiLaunch
 {
@@ -20,10 +21,17 @@ namespace GuiLaunch
         private readonly GuiLaunchEngine _eng;
         private readonly LauncherSettings _settings;
         private readonly Lazy<OutputViewForm> outputViewForm = new Lazy<OutputViewForm>(() => new OutputViewForm());
+        private readonly Lazy<OutputViewForm> logForm = new Lazy<OutputViewForm>(() =>
+        {
+            var form = new OutputViewForm();
+            form.Text = "Heymars notifications";
+            return form;
+        });
+
         public Form1(GuiLaunchEngine eng, LauncherSettings settings)
         {
             InitializeComponent();
-            this._eventproc = new EventProcessor(commandGrid, eng);
+            this._eventproc = new EventProcessor(commandGrid, eng, this);
             _eventproc.ShouldSpeak = ShouldSpeak;
             this._eng = eng;
             this._settings = settings;
@@ -164,6 +172,32 @@ namespace GuiLaunch
         private void btnEdit_Click(object sender, EventArgs e)
         {
             var t = _eng.OpenFileInEditor(_eng.ConfigFilePath);
+
+        }
+
+        internal void LogMessage(string message)
+        {
+            var log = logForm.Value;
+            log.Scintilla.AddText(message + "\n");
+            log.Show();
+            log.BringToFront();
+
+        }
+
+        private void cbCurrentConfig_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cbCurrentConfig.SelectedIndex != 0)
+            {
+
+                string exeName = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+                var filename = cbCurrentConfig.SelectedItem as string;
+                Process.Start(new ProcessStartInfo
+                {
+                    UseShellExecute = true,
+                    FileName = exeName,
+                    Arguments = filename
+                });
+            }
 
         }
     }

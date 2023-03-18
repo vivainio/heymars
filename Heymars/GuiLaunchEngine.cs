@@ -51,7 +51,8 @@ namespace GuiLaunch
     public interface IProcessEvents
     {
         void ProcessStatusChanged(int index, string status);
-        void SpeakStatus(int index, string message);
+        void SpeakStatus(string message);
+        void Log(string message);
         void RepaintNeeded();
 
     }
@@ -191,6 +192,10 @@ namespace GuiLaunch
                 }
 
                 Commands = configFile.commands;
+            }
+            for (int i = 0; i < Commands.Length; i++)
+            {
+                Commands[i].index = i;
             }
             ConfigFilePath = Path.GetFullPath(fname);
             Cwd = Path.GetFullPath(Cwd);
@@ -364,19 +369,44 @@ namespace GuiLaunch
             return ts;
         }
 
+        private void TriggerMatcher(CommandEntry command, Matcher matcher, string line)
+        {
+            var say = matcher.say;
+            if (say != null)
+            {
+                var toSay = say.Replace("{id}", command.id ?? command.index.ToString());
+
+                _listener.SpeakStatus(toSay);
+            }
+            if (matcher.log)
+            {
+                _listener.Log(line);
+            }
+        }
         private async Task<(int ExitCode, int Seconds)> StreamResults(int index, string v, Command cmd)
         {
             var running = Running[index];
             var buf = running.OutputBuf;
+            var command = Commands[index];
+            var matchers = command.matchers ?? Enumerable.Empty<Matcher>();
             void write(string title, string color, string text)
             {
                 if (CollectOutput)
                 {
                     buf.PushBack(text);
                 }
+               
                 AnsiConsole.Write(new Markup($"[{color}]{title}:[/] {text.EscapeMarkup()}\n"));
                 LogStream?.WriteLine($"{title}: {text}");
-
+                foreach (var m in matchers)
+                {
+                    if (Matcher.MatchAny(m, text))
+                    {
+                        TriggerMatcher(command, m, text);
+                        // only one matcher per line
+                        break;
+                    }
+                }
             }
 
             Color ocolor = index % 14 + 2;
@@ -427,7 +457,7 @@ namespace GuiLaunch
 
             RefreshSingleStatus(index);
             var status = exitCode == 0 ? "completed" : "failed";
-            _listener.SpeakStatus(index, $"{status} run {index}");
+            _listener.SpeakStatus($"{status} run {index}");
         }
 
         public async Task OpenFileInEditor(string fname)
