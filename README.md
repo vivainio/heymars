@@ -115,7 +115,7 @@ Heymars directly supports running [jsonnet](https://jsonnet.org/) files if you h
 
 It is recommended to create your json files with jsonnet, to avoid repetition and e.g. reuse "C# error matchers" for different projects.
 
-
+[Here](https://github.com/vivainio/heymars/blob/main/Examples/heymars_schema.ts) is the generated typescript schema you can use for quick reference.
 
 # License
 
