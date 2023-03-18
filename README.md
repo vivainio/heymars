@@ -117,6 +117,15 @@ It is recommended to create your json files with jsonnet, to avoid repetition an
 
 [Here](https://github.com/vivainio/heymars/blob/main/Examples/heymars_schema.ts) is the generated typescript schema you can use for quick reference.
 
+For casual use, you can use plain text file as input. This file creates 4 commands:
+
+```
+echo hello
+echo world
+ls
+pwd
+```
+
 # License
 
 MIT
