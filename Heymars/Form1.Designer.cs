@@ -71,6 +71,7 @@
             commandGrid.RowEnter += commandGrid_RowEnter;
             commandGrid.SelectionChanged += commandGrid_SelectionChanged;
             commandGrid.KeyDown += commandGrid_KeyDown_1;
+            commandGrid.Leave += commandGrid_Leave;
             // 
             // Index
             // 

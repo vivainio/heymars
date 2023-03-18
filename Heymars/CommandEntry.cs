@@ -6,9 +6,14 @@ namespace GuiLaunch;
 
 public class Matcher
 {
+
     public List<string> patterns { get; set; }
     public string say { get; set; }
     public bool log { get; set; } = false;
+    /// <summary>
+    /// Action: set "extrastatus" text to this
+    /// </summary>
+    public string status { get; set; }
     public static bool MatchAny(Matcher m, string line) =>
         m.patterns == null ? false : m.patterns.Where(pat => Regex.IsMatch(line, pat)).Any();
 }

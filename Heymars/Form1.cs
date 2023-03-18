@@ -1,6 +1,7 @@
 ﻿using CliWrap;
 using Heymars;
 using Heymars.Properties;
+using ScintillaNET;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -177,10 +178,20 @@ namespace GuiLaunch
 
         internal void LogMessage(string message)
         {
+            var isOld = logForm.IsValueCreated;
             var log = logForm.Value;
             log.Scintilla.AddText(message + "\n");
+#pragma warning disable CA1416 // Validate platform compatibility
+            log.Scintilla.ExecuteCmd(ScintillaNET.Command.DocumentEnd);
+#pragma warning restore CA1416 // Validate platform compatibility
+            
             log.Show();
-            log.BringToFront();
+            if (!isOld)
+            {
+                log.BringToFront();
+                commandGrid.Select();
+                this.Select();
+            }
 
         }
 
@@ -199,6 +210,11 @@ namespace GuiLaunch
                 });
             }
 
+        }
+
+        private void commandGrid_Leave(object sender, EventArgs e)
+        {
+            commandGrid.Select();
         }
     }
 }

@@ -68,6 +68,7 @@ namespace GuiLaunch
         public int StdOutLines { get; set; }
         public int StdErrLines { get; set; }
         public string InternalError { get; set; }
+        public string ExtraStatus { get; set; }
         
     }
 
@@ -219,10 +220,13 @@ namespace GuiLaunch
             if (running.InternalError != null)
             {
                 return running.InternalError;
-            }
+            };
+
+            var extraStatus = running.ExtraStatus == null ? "" : running.ExtraStatus + " ";
+
             if (running.ExitCode == 0)
             {
-                return "ok";
+                return $"{extraStatus}ok";
             }
 
             var elapsed = running.Started.ElapsedMilliseconds;
@@ -235,7 +239,7 @@ namespace GuiLaunch
             // elapsed mode! let's calculate timing etc
 
 
-            var prefix = $"... {NiceTimeText(elapsed)} e:{running.StdErrLines} o:{running.StdOutLines}";
+            var prefix = $"... {extraStatus}{NiceTimeText(elapsed)} e:{running.StdErrLines} o:{running.StdOutLines}";
 
 
             var stat = Stats.GetValueOrDefault(index);
@@ -369,19 +373,26 @@ namespace GuiLaunch
             return ts;
         }
 
-        private void TriggerMatcher(CommandEntry command, Matcher matcher, string line)
+        private void TriggerMatcher(CommandEntry command, RunningCommand running, Matcher matcher, string line)
         {
             var say = matcher.say;
+            var id = command.id ?? command.index.ToString();
             if (say != null)
             {
-                var toSay = say.Replace("{id}", command.id ?? command.index.ToString());
+                var toSay = say.Replace("{id}", id);
 
                 _listener.SpeakStatus(toSay);
             }
             if (matcher.log)
             {
-                _listener.Log(line);
+                _listener.Log($"{id}: {line}");
             }
+
+            if (matcher.status != null)
+            {
+                running.ExtraStatus = matcher.status;
+            }
+
         }
         private async Task<(int ExitCode, int Seconds)> StreamResults(int index, string v, Command cmd)
         {
@@ -402,7 +413,7 @@ namespace GuiLaunch
                 {
                     if (Matcher.MatchAny(m, text))
                     {
-                        TriggerMatcher(command, m, text);
+                        TriggerMatcher(command, running, m, text);
                         // only one matcher per line
                         break;
                     }
