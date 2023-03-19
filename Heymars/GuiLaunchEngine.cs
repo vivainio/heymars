@@ -122,24 +122,30 @@ namespace GuiLaunch
         }
         public static CommandEntry[] ReadTextFile(string fname)
         {
-            static bool ValidCommand(string s)
+            static CommandEntry CreateCommand(string s)
             {
                 if (string.IsNullOrEmpty(s.Trim()))
                 {
-                    return false;
+                    return null;
                 }
 
-                return true;
+                // you can interleave some commands in one line if you want
+                if (s.StartsWith("{"))
+                {
+                    return JsonSerializer.Deserialize<CommandEntry>(s);
 
+                }
+
+                return new CommandEntry
+                {
+                    shell = true,
+                    c = s
+
+                };
             }
 
             var lines = File.ReadAllLines(fname);
-            return lines.Where(ValidCommand).Select(line => new CommandEntry
-            {
-                shell = true,
-                c = line
-
-            }).ToArray();
+            return lines.Select(CreateCommand).Where(c => c!= null).ToArray();
 
         }
 
@@ -394,7 +400,7 @@ namespace GuiLaunch
             }
 
         }
-        private async Task<(int ExitCode, int Seconds)> StreamResults(int index, string v, Command cmd)
+        private async Task<(int ExitCode, int Seconds)> StreamResults(int index, string v, CliWrap.Command cmd)
         {
             var running = Running[index];
             var buf = running.OutputBuf;
