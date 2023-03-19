@@ -2,9 +2,9 @@
 
 ![image](https://user-images.githubusercontent.com/557579/209970802-30852d6c-2418-4a44-88dd-ff8e113bab46.png)
 
-Heymars is a small launcher GUI that allows you to select commands to run, and it, well, runs them.
+Heymars is a small, configurable launcher GUI for technical users.
 
-Commands can be listed in a .txt or .json file.
+Commands can be listed in a .txt, .json or .jsonnet file.
 
 # Overview
 
@@ -114,6 +114,27 @@ Heymars directly supports running [jsonnet](https://jsonnet.org/) files if you h
 ```
 
 It is recommended to create your json files with jsonnet, to avoid repetition and e.g. reuse "C# error matchers" for different projects.
+
+[Here](https://github.com/vivainio/heymars/blob/main/Examples/heymars_schema.ts) is the generated typescript schema you can use for quick reference.
+
+For casual use, you can use plain text file as input. This file creates 4 commands:
+
+```
+echo hello
+echo world
+ls
+pwd
+```
+
+You can gradually update to full blown json config by interleaving lines containing commands in json format:
+
+```
+echo hello
+echo world
+ls
+{ "title": "More complex stuff you can fit on one line", "c": "echo foobar!", "fgcolor": "green", "id": "" }
+pwd
+```
 
 
 
