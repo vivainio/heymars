@@ -126,6 +126,18 @@ ls
 pwd
 ```
 
+You can gradually update to full blown json config by interleaving lines containing commands in json format:
+
+```
+echo hello
+echo world
+ls
+{ "title": "More complex stuff you can fit on one line", "c": "echo foobar!", "fgcolor": "green", "id": "" }
+pwd
+```
+
+
+
 # License
 
 MIT
