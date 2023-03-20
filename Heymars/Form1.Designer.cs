@@ -65,7 +65,7 @@
             commandGrid.ShowCellToolTips = false;
             commandGrid.ShowEditingIcon = false;
             commandGrid.ShowRowErrors = false;
-            commandGrid.Size = new System.Drawing.Size(1029, 495);
+            commandGrid.Size = new System.Drawing.Size(919, 495);
             commandGrid.TabIndex = 2;
             commandGrid.CellContentClick += commandGrid_CellContentClick;
             commandGrid.RowEnter += commandGrid_RowEnter;
@@ -141,7 +141,7 @@
             // 
             cbSpeak.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
             cbSpeak.AutoSize = true;
-            cbSpeak.Location = new System.Drawing.Point(948, 578);
+            cbSpeak.Location = new System.Drawing.Point(838, 578);
             cbSpeak.Name = "cbSpeak";
             cbSpeak.Size = new System.Drawing.Size(71, 24);
             cbSpeak.TabIndex = 6;
@@ -183,11 +183,12 @@
             // 
             // cbCurrentConfig
             // 
+            cbCurrentConfig.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             cbCurrentConfig.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             cbCurrentConfig.FormattingEnabled = true;
             cbCurrentConfig.Location = new System.Drawing.Point(12, 7);
             cbCurrentConfig.Name = "cbCurrentConfig";
-            cbCurrentConfig.Size = new System.Drawing.Size(1025, 28);
+            cbCurrentConfig.Size = new System.Drawing.Size(919, 28);
             cbCurrentConfig.TabIndex = 10;
             cbCurrentConfig.SelectedIndexChanged += cbCurrentConfig_SelectedIndexChanged;
             // 
@@ -195,7 +196,7 @@
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(1053, 612);
+            ClientSize = new System.Drawing.Size(943, 612);
             Controls.Add(cbCurrentConfig);
             Controls.Add(btnEdit);
             Controls.Add(lblDesc);
