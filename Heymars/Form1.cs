@@ -184,7 +184,7 @@ namespace GuiLaunch
 #pragma warning disable CA1416 // Validate platform compatibility
             log.Scintilla.ExecuteCmd(ScintillaNET.Command.DocumentEnd);
 #pragma warning restore CA1416 // Validate platform compatibility
-            
+
             log.Show();
             if (!isOld)
             {
@@ -214,6 +214,13 @@ namespace GuiLaunch
 
         private void commandGrid_Leave(object sender, EventArgs e)
         {
+            var active = this.ActiveControl;
+            // only config selector can gain focus (to enable selection overall)
+            if (active == cbCurrentConfig)
+            {
+                return;
+            }
+            
             commandGrid.Select();
         }
     }

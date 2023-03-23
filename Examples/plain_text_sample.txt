@@ -1,5 +1,9 @@
 echo hello
+# Comment
 echo world
+
+
+rem another comment
 ls
 { "title": "More complex stuff you can fit on one line", "c": "echo foobar!", "fgcolor": "green", "id": "" }
 pwd

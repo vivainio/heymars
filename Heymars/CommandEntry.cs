@@ -14,14 +14,15 @@ public class Matcher
     /// Action: set "extrastatus" text to this
     /// </summary>
     public string status { get; set; }
+    public bool noprogress { get; set; } = false;
     public static bool MatchAny(Matcher m, string line) =>
         m.patterns == null ? false : m.patterns.Where(pat => Regex.IsMatch(line, pat)).Any();
 }
 
 
-public class CommandEntry
+public record CommandEntry
 {
-    public int index { get; set; }
+    public int? index { get; set; }
     public string id { get; set; }
     public string c { get; set; }
     public string cwd { get; set; }

@@ -21,33 +21,6 @@ namespace GuiLaunch
     {
         public List<string> history { get; set; }
     }
-
-    public class SettingsStorage
-    {
-        public string Location => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "heymars", "settings.json"); 
-        public void LoadAndModify(Action<StoredSettings> modify)
-        {
-            StoredSettings storedSettings;
-            if (!File.Exists(Location))
-            {
-                storedSettings = new StoredSettings
-                {
-                    history = new List<string>()
-                };
-                Directory.CreateDirectory(Path.GetDirectoryName(Location));
-            } else
-            {
-                var cont = File.ReadAllBytes(Location);
-
-                storedSettings = JsonSerializer.Deserialize<StoredSettings>(cont);
-                storedSettings.history ??= new List<string>();
-
-            }
-            modify(storedSettings);
-            var newCont = JsonSerializer.SerializeToUtf8Bytes(storedSettings);
-            File.WriteAllBytes(Location, newCont);
-        }
-    }
     public interface IProcessEvents
     {
         void ProcessStatusChanged(int index, string status);
@@ -69,6 +42,7 @@ namespace GuiLaunch
         public int StdErrLines { get; set; }
         public string InternalError { get; set; }
         public string ExtraStatus { get; set; }
+        public bool NoProgress { get; set; }
         
     }
 
@@ -120,58 +94,6 @@ namespace GuiLaunch
                 return $"{t.Minutes}min {t.Seconds}s";
             return $"{t.Seconds}s";
         }
-        public static CommandEntry[] ReadTextFile(string fname)
-        {
-            static CommandEntry CreateCommand(string s)
-            {
-                if (string.IsNullOrEmpty(s.Trim()))
-                {
-                    return null;
-                }
-
-                // you can interleave some commands in one line if you want
-                if (s.StartsWith("{"))
-                {
-                    return JsonSerializer.Deserialize<CommandEntry>(s);
-
-                }
-
-                return new CommandEntry
-                {
-                    shell = true,
-                    c = s
-
-                };
-            }
-
-            var lines = File.ReadAllLines(fname);
-            return lines.Select(CreateCommand).Where(c => c!= null).ToArray();
-
-        }
-
-        public static ConfigFile ReadJsonFile(string fname)
-        {
-
-            var cont = File.ReadAllBytes(fname);
-            return JsonSerializer.Deserialize<ConfigFile>(cont);
-        }
-
-        public static async Task<ConfigFile> ReadJsonnetFile(string fname)
-        {
-            var o = await Cli.Wrap("jsonnet").WithArguments(fname).WithValidation(CommandResultValidation.None).ExecuteBufferedAsync();
-            var json = o.StandardOutput;
-            AnsiConsole.Write(new Markup($"Jsonnet expansion:\n [blue]{json.EscapeMarkup()}[/]"));
-            if (o.ExitCode != 0)
-            {
-                AnsiConsole.Write(new Markup($"[red]Jsonnet error[/]:\n [blue]{o.StandardError.EscapeMarkup()}[/]"));
-
-
-                return null;
-            }
-            return JsonSerializer.Deserialize<ConfigFile>(o.StandardOutput);
-
-
-        }
 
         public async Task PopulateFromConfigFile(string fname)
         {
@@ -179,17 +101,17 @@ namespace GuiLaunch
             ConfigFile configFile = null;
             if (fname.EndsWith(".json"))
             {
-                configFile = ReadJsonFile(fname);
+                configFile = ConfigReaders.ReadJsonFile(fname);
             } else if (fname.EndsWith(".jsonnet"))
             {
-                configFile = await ReadJsonnetFile(fname);
+                configFile = await ConfigReaders.ReadJsonnetFile(fname);
                 if (configFile == null)
                 {
                     return;
                 }
             }
             else {
-                Commands = ReadTextFile(fname);
+                Commands = ConfigReaders.ReadTextFile(fname);
             }
             if (configFile != null)
             {
@@ -208,6 +130,7 @@ namespace GuiLaunch
             Cwd = Path.GetFullPath(Cwd);
             _listener?.RepaintNeeded();
         }
+
 
 
         private string CalculateStatusString(int index)
@@ -245,7 +168,7 @@ namespace GuiLaunch
             // elapsed mode! let's calculate timing etc
 
 
-            var prefix = $"... {extraStatus}{NiceTimeText(elapsed)} e:{running.StdErrLines} o:{running.StdOutLines}";
+            var prefix = running.NoProgress ? $"... {extraStatus}" : $"... {extraStatus}{NiceTimeText(elapsed)} e:{running.StdErrLines} o:{running.StdOutLines}";
 
 
             var stat = Stats.GetValueOrDefault(index);
@@ -255,6 +178,10 @@ namespace GuiLaunch
 
             var progress = stat.PrevDuration > elapsed ? $"ETA: {NiceTimeText(stat.PrevDuration - elapsed)}"
                 : $"{(int)((float)elapsed / stat.PrevDuration * 100)}%";
+            if (running.NoProgress)
+            {
+                return prefix;
+            }
             return $"{prefix} {progress}";
         }
 
@@ -397,6 +324,10 @@ namespace GuiLaunch
             if (matcher.status != null)
             {
                 running.ExtraStatus = matcher.status;
+            }
+            if (matcher.noprogress)
+            {
+                running.NoProgress = true;
             }
 
         }
@@ -632,7 +563,7 @@ namespace GuiLaunch
             if (!Running.ContainsKey(index))
             {
                 var command = Commands[index];
-                return JsonizeCommand(command);
+                return Jsonize(command);
             }
 
             var running = Running[index];
@@ -662,9 +593,9 @@ namespace GuiLaunch
             return sb.ToString();
         }
 
-        private string JsonizeCommand(CommandEntry command)
+        public string Jsonize<T>(T obj)
         {
-            return JsonSerializer.Serialize(command, jsonOptions);
+            return JsonSerializer.Serialize(obj, jsonOptions);
         }
 
         internal void ClearStatuses()
@@ -710,8 +641,9 @@ namespace GuiLaunch
             var storage = new SettingsStorage();
             storage.LoadAndModify((settings) =>
             {
-                // move to first
-                settings.history.Remove(ConfigFilePath);
+                // move to first, normalize away dupes
+                settings.history = settings.history.DistinctBy(x => x.ToLowerInvariant())
+                    .Where(x => !x.Equals(ConfigFilePath, StringComparison.OrdinalIgnoreCase)).ToList();
                 settings.history.Insert(0, ConfigFilePath);
                 cbCurrentConfig.Items.AddRange(settings.history.ToArray());
             });
