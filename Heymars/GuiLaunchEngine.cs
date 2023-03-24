@@ -14,12 +14,14 @@ using CliWrap.EventStream;
 using CircularBuffer;
 using Timer = System.Threading.Timer;
 using System.Threading;
+using Heymars.Properties;
 
 namespace GuiLaunch
 {
     public class StoredSettings
     {
         public List<string> history { get; set; }
+        public List<string> dirs { get; set; }
     }
     public interface IProcessEvents
     {
@@ -636,18 +638,38 @@ namespace GuiLaunch
             }
         }
 
+        List<string> PushNewString(List<string> strings, string newString)
+        {
+
+            var news = (strings ?? new List<string>()).DistinctBy(x => x.ToLowerInvariant())
+                    .Where(x => !x.Equals(ConfigFilePath, StringComparison.OrdinalIgnoreCase)).ToList();
+            news.Insert(0, newString);
+            return news;
+
+        }
         internal void PopulateFileList(ComboBox cbCurrentConfig)
         {
             var storage = new SettingsStorage();
             storage.LoadAndModify((settings) =>
             {
                 // move to first, normalize away dupes
-                settings.history = settings.history.DistinctBy(x => x.ToLowerInvariant())
-                    .Where(x => !x.Equals(ConfigFilePath, StringComparison.OrdinalIgnoreCase)).ToList();
-                settings.history.Insert(0, ConfigFilePath);
+
+                settings.history = PushNewString(settings.history, ConfigFilePath);
                 cbCurrentConfig.Items.AddRange(settings.history.ToArray());
             });
             cbCurrentConfig.SelectedIndex = 0;
+        }
+
+        internal void ChangeDir(string targetDir, ComboBox cbDirs)
+        {
+            Cwd = targetDir;
+            var storage = new SettingsStorage();
+            storage.LoadAndModify((settings) =>
+            {
+                settings.dirs = PushNewString(settings.dirs, targetDir);
+                cbDirs.Items.Clear();
+                cbDirs.Items.AddRange(settings.dirs.ToArray());
+            });
         }
     }
 }

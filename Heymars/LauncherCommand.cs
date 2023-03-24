@@ -50,8 +50,7 @@ namespace GuiLaunch
                 var asText = eng.Jsonize(configDto);
                 Console.WriteLine(asText);
             }
-
-            form.Text = "Heymars: " + eng.Cwd;
+            
             Application.Run(form);
             return 0;
       }

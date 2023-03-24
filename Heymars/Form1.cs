@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -43,8 +44,11 @@ namespace GuiLaunch
         private void Form1_Load(object sender, EventArgs e)
         {
             _eng.PopulateFileList(cbCurrentConfig);
+            _eng.ChangeDir(_eng.Cwd, cbDir);
+            cbDir.Text = _eng.Cwd;
             _eng.DrawGrid(commandGrid);
             _eng.StartPolling();
+            SetFormTitle();
             if (_settings.RunAll)
             {
                 _eng.RunAll().ContinueWith(t =>
@@ -67,8 +71,6 @@ namespace GuiLaunch
             var supress = await _eng.KeyPress(e.KeyCode, index);
             e.Handled = supress;
             e.SuppressKeyPress = supress;
-            //e.SuppressKeyPress
-
         }
 
         private void commandListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -132,10 +134,6 @@ namespace GuiLaunch
 #pragma warning restore CA1416 // Validate platform compatibility
 
         }
-        private void commandGrid_SelectionChanged(object sender, EventArgs e)
-        {
-        }
-
         private void commandGrid_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
             lblDesc.Text = e.RowIndex.ToString();
@@ -217,12 +215,55 @@ namespace GuiLaunch
         {
             var active = this.ActiveControl;
             // only config selector can gain focus (to enable selection overall)
-            if (active == cbCurrentConfig)
+            if (active is ComboBox)
             {
                 return;
             }
-            
+
             commandGrid.Select();
+        }
+
+        private void cbDir_KeyDown(object sender, KeyEventArgs e)
+        {
+        }
+
+        private void SetFormTitle()
+        {
+            this.Text = $"Heymars: {_eng.Cwd}";
+        }
+
+
+        private void cbDir_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Enter)
+            {
+                var targetDir = cbDir.Text;
+                AskCwdChange(targetDir);
+                e.Handled = true;
+            }
+
+
+        }
+
+        private void AskCwdChange(string targetDir)
+        {
+            if (Directory.Exists(targetDir))
+            {
+                _eng.ChangeDir(targetDir, cbDir);
+                SetFormTitle();
+                cbDir.Text = targetDir;
+            }
+        }
+
+        private void cbDir_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cbDir.SelectedIndex == 0)
+            {
+                return;
+            }
+            var selected = cbDir.SelectedItem as string;
+            AskCwdChange(selected);
+
         }
     }
 }

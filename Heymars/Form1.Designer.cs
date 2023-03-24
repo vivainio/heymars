@@ -42,6 +42,7 @@
             lblDesc = new System.Windows.Forms.Label();
             btnEdit = new System.Windows.Forms.Button();
             cbCurrentConfig = new System.Windows.Forms.ComboBox();
+            cbDir = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)commandGrid).BeginInit();
             SuspendLayout();
             // 
@@ -69,7 +70,6 @@
             commandGrid.TabIndex = 2;
             commandGrid.CellContentClick += commandGrid_CellContentClick;
             commandGrid.RowEnter += commandGrid_RowEnter;
-            commandGrid.SelectionChanged += commandGrid_SelectionChanged;
             commandGrid.KeyDown += commandGrid_KeyDown_1;
             commandGrid.Leave += commandGrid_Leave;
             // 
@@ -188,15 +188,27 @@
             cbCurrentConfig.FormattingEnabled = true;
             cbCurrentConfig.Location = new System.Drawing.Point(12, 7);
             cbCurrentConfig.Name = "cbCurrentConfig";
-            cbCurrentConfig.Size = new System.Drawing.Size(919, 28);
+            cbCurrentConfig.Size = new System.Drawing.Size(691, 28);
             cbCurrentConfig.TabIndex = 10;
             cbCurrentConfig.SelectedIndexChanged += cbCurrentConfig_SelectedIndexChanged;
+            // 
+            // cbDir
+            // 
+            cbDir.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            cbDir.FormattingEnabled = true;
+            cbDir.Location = new System.Drawing.Point(709, 8);
+            cbDir.Name = "cbDir";
+            cbDir.Size = new System.Drawing.Size(222, 28);
+            cbDir.TabIndex = 11;
+            cbDir.SelectedIndexChanged += cbDir_SelectedIndexChanged;
+            cbDir.KeyPress += cbDir_KeyPress;
             // 
             // Form1
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(943, 612);
+            Controls.Add(cbDir);
             Controls.Add(cbCurrentConfig);
             Controls.Add(btnEdit);
             Controls.Add(lblDesc);
@@ -229,6 +241,7 @@
         private System.Windows.Forms.Label lblDesc;
         private System.Windows.Forms.Button btnEdit;
         private System.Windows.Forms.ComboBox cbCurrentConfig;
+        private System.Windows.Forms.ComboBox cbDir;
     }
 }
 
