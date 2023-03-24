@@ -208,6 +208,7 @@ namespace GuiLaunch
                     FileName = exeName,
                     Arguments = filename
                 });
+                cbCurrentConfig.SelectedIndex = 0;
             }
 
         }
