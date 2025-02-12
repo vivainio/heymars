@@ -17,7 +17,8 @@ from types import ModuleType
 TASK_MODULES: list[ModuleType] = []
 
 PRJNAME = "Heymars"
-PRJDIR = Path(PRJNAME)
+PRJROOT = Path(__file__).parent.absolute()
+PRJDIR = PRJROOT / PRJNAME
 
 VERSION = PRJDIR.joinpath("version.txt").read_text().strip()
 
@@ -42,12 +43,15 @@ def do_test(_args: list[str]) -> None:
 
 
 def do_publish(_args: list[str]) -> None:
+    deploy_dir = PRJROOT / "deploy"
     nuke(PRJDIR/"bin")
     nuke(PRJDIR/"obj")
+    nuke(deploy_dir, create=True)
+
     c(["dotnet", "publish", "-c", "Release", "--arch", "x64"], cwd=PRJDIR)
     os.chdir(PRJDIR/"bin/Release/net8.0-windows")
     os.rename("win-x64", "Heymars")
-    c(["7z", "a", f"../../../deploy/heymars-{VERSION}.zip", "Heymars"])
+    c(["7z", "a", deploy_dir / f"heymars-{VERSION}.zip", "Heymars"])
 
 
 
@@ -71,12 +75,11 @@ def c(
     subprocess.run(cmd, check=check, shell=shell, cwd=cwd)
 
 
-
-
-
-def nuke(pth):
+def nuke(pth: Path, create=False):
     if os.path.isdir(pth):
         shutil.rmtree(pth)
+    if create:
+        os.mkdir(pth)
 
 
 # scaffolding starts. Do not edit below
