@@ -1,16 +1,20 @@
-﻿using Spectre.Console.Cli;
-using System.ComponentModel;
+﻿using System.ComponentModel;
+using Spectre.Console.Cli;
 
 namespace GuiLaunch
 {
-    public class LauncherSettings: CommandSettings
+    public class LauncherSettings : CommandSettings
     {
         [Description("Path to config file. Can be .json, .jsonnet or flat text file")]
         [CommandArgument(0, "<CONFIG_FILE>")]
         public string Config { get; set; }
-        [Description("Run without GUI. This automatically launches all the commands at the same time")]
+
+        [Description(
+            "Run without GUI. This automatically launches all the commands at the same time"
+        )]
         [CommandOption("--headless")]
         public bool Headless { get; set; }
+
         [Description("When running with gui mode, launch all commands at the same time")]
         [CommandOption("--runall")]
         public bool RunAll { get; set; }

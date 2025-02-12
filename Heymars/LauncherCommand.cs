@@ -1,16 +1,19 @@
-﻿using Spectre.Console.Cli;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Spectre.Console.Cli;
 
 namespace GuiLaunch
 {
     public class LauncherCommand : AsyncCommand<LauncherSettings>
     {
-        public override async Task<int> ExecuteAsync(CommandContext context, LauncherSettings settings)
+        public override async Task<int> ExecuteAsync(
+            CommandContext context,
+            LauncherSettings settings
+        )
         {
             var eng = new GuiLaunchEngine();
             await eng.PopulateFromConfigFile(settings.Config);
@@ -29,7 +32,8 @@ namespace GuiLaunch
                 if (settings.Run != null)
                 {
                     await eng.RunCommands(settings.Run.Split(","));
-                } else
+                }
+                else
                 {
                     await eng.RunAll();
                 }
@@ -38,21 +42,17 @@ namespace GuiLaunch
             var form = new Form1(eng, settings);
             if (settings.Show)
             {
-                
                 var configDto = new ConfigFile
                 {
-                    commands = eng.Commands.Select(c => c with
-                    {
-                        index = null
-                    }).ToArray(),
-                    root = eng.Cwd
+                    commands = eng.Commands.Select(c => c with { index = null }).ToArray(),
+                    root = eng.Cwd,
                 };
                 var asText = eng.Jsonize(configDto);
                 Console.WriteLine(asText);
             }
-            
+
             Application.Run(form);
             return 0;
-      }
+        }
     }
 }

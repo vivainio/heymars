@@ -1,21 +1,19 @@
-﻿using Spectre.Console.Cli;
-using System;
+﻿using System;
 using System.Windows.Forms;
+using Spectre.Console.Cli;
 
 namespace GuiLaunch
 {
-
     internal static class Program
     {
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
-        
-      
+
+
         [STAThread]
         static int Main(string[] args)
         {
-           
             Application.EnableVisualStyles();
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.SetCompatibleTextRenderingDefault(false);
@@ -27,7 +25,6 @@ namespace GuiLaunch
             });
 
             return app.Run(args);
-
         }
     }
 }

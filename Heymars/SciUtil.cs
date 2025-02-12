@@ -1,5 +1,5 @@
-﻿using ScintillaNET;
-using System.Drawing;
+﻿using System.Drawing;
+using ScintillaNET;
 
 namespace Heymars
 {
@@ -39,15 +39,26 @@ namespace Heymars
             scintilla.Styles[Style.Cpp.Preprocessor].ForeColor = Color.Maroon;
 
             // Set the keywords
-            scintilla.SetKeywords(0, "abstract as base break case catch checked continue default delegate do else event explicit extern false finally fixed for foreach goto if implicit in interface internal is lock namespace new null object operator out override params private protected public readonly ref return sealed sizeof stackalloc switch this throw true try typeof unchecked unsafe using virtual while");
-            scintilla.SetKeywords(1, "bool byte char class const decimal double enum float int long sbyte short static string struct uint ulong ushort void");
+            scintilla.SetKeywords(
+                0,
+                "abstract as base break case catch checked continue default delegate do else event explicit extern false finally fixed for foreach goto if implicit in interface internal is lock namespace new null object operator out override params private protected public readonly ref return sealed sizeof stackalloc switch this throw true try typeof unchecked unsafe using virtual while"
+            );
+            scintilla.SetKeywords(
+                1,
+                "bool byte char class const decimal double enum float int long sbyte short static string struct uint ulong ushort void"
+            );
 
             scintilla.ScrollWidth = 0;
             scintilla.ScrollWidthTracking = true;
 
             return scintilla;
         }
-        public static int SearchAndMove(Scintilla scintilla, string searchText, bool reverse = false)
+
+        public static int SearchAndMove(
+            Scintilla scintilla,
+            string searchText,
+            bool reverse = false
+        )
         {
             if (reverse)
             {
@@ -58,7 +69,6 @@ namespace Heymars
             {
                 scintilla.TargetStart = scintilla.CurrentPosition;
                 scintilla.TargetEnd = scintilla.TextLength;
-
             }
             int pos = scintilla.SearchInTarget(searchText);
             if (pos != -1)
@@ -69,6 +79,7 @@ namespace Heymars
             }
             return pos;
         }
+
         public static void TouchAfterTextLoad(Scintilla scintilla)
         {
             scintilla.ScrollWidth = 1;
@@ -90,7 +101,6 @@ namespace Heymars
             var start = scintilla.Lines[line - (linesOnScreen / 2)].Position;
             var end = scintilla.Lines[line + (linesOnScreen / 2)].Position;
             scintilla.ScrollRange(end, start);
-
         }
     }
 #pragma warning restore CA1416

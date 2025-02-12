@@ -11,6 +11,7 @@ namespace GuiLaunch
         private readonly Form1 _form;
         private readonly DataGridView grid;
         public Func<bool> ShouldSpeak { get; set; }
+
         public EventProcessor(DataGridView grid, GuiLaunchEngine eng, Form1 form)
         {
             _synth = new SpeechSynthesizer();
@@ -18,9 +19,9 @@ namespace GuiLaunch
             _form = form;
             this.grid = grid;
         }
+
         public void ProcessStatusChanged(int index, string status)
         {
-
             grid.Rows[index].Cells[2].Value = status;
         }
 

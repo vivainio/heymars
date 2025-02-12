@@ -22,6 +22,7 @@ PRJDIR = PRJROOT / PRJNAME
 
 VERSION = PRJDIR.joinpath("version.txt").read_text().strip()
 
+
 def do_check(_args: list[str]) -> None:
     """typecheck, lint etc goes here"""
     c("python mypy heymars")
@@ -30,6 +31,7 @@ def do_check(_args: list[str]) -> None:
 def do_format(_args: list[str]) -> None:
     """Reformat all code"""
     c(["ruff", "format", "."])
+    c(["dotnet", "csharpier", "."], cwd=PRJDIR)
 
 
 def do_lint(_args: list[str]) -> None:
@@ -44,15 +46,14 @@ def do_test(_args: list[str]) -> None:
 
 def do_publish(_args: list[str]) -> None:
     deploy_dir = PRJROOT / "deploy"
-    nuke(PRJDIR/"bin")
-    nuke(PRJDIR/"obj")
+    nuke(PRJDIR / "bin")
+    nuke(PRJDIR / "obj")
     nuke(deploy_dir, create=True)
 
     c(["dotnet", "publish", "-c", "Release", "--arch", "x64"], cwd=PRJDIR)
-    os.chdir(PRJDIR/"bin/Release/net8.0-windows")
+    os.chdir(PRJDIR / "bin/Release/net8.0-windows")
     os.rename("win-x64", "Heymars")
     c(["7z", "a", deploy_dir / f"heymars-{VERSION}.zip", "Heymars"])
-
 
 
 def default() -> None:

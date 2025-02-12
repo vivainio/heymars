@@ -7,11 +7,11 @@ namespace CircularBuffer
     /// <inheritdoc/>
     /// <summary>
     /// Circular buffer.
-    /// 
+    ///
     /// When writing to a full buffer:
     /// PushBack -> removes this[0] / Front()
     /// PushFront -> removes this[Size-1] / Back()
-    /// 
+    ///
     /// this implementation is inspired by
     /// http://www.boost.org/doc/libs/1_53_0/libs/circular_buffer/doc/circular_buffer.html
     /// because I liked their interface.
@@ -37,19 +37,17 @@ namespace CircularBuffer
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CircularBuffer{T}"/> class.
-        /// 
+        ///
         /// </summary>
         /// <param name='capacity'>
         /// Buffer capacity. Must be positive.
         /// </param>
         public CircularBuffer(int capacity)
-            : this(capacity, new T[] { })
-        {
-        }
+            : this(capacity, new T[] { }) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CircularBuffer{T}"/> class.
-        /// 
+        ///
         /// </summary>
         /// <param name='capacity'>
         /// Buffer capacity. Must be positive.
@@ -64,7 +62,9 @@ namespace CircularBuffer
             if (capacity < 1)
             {
                 throw new ArgumentException(
-                    "Circular buffer cannot have negative or zero capacity.", nameof(capacity));
+                    "Circular buffer cannot have negative or zero capacity.",
+                    nameof(capacity)
+                );
             }
             if (items == null)
             {
@@ -72,8 +72,7 @@ namespace CircularBuffer
             }
             if (items.Length > capacity)
             {
-                throw new ArgumentException(
-                    "Too many items to fit circular buffer", nameof(items));
+                throw new ArgumentException("Too many items to fit circular buffer", nameof(items));
             }
 
             _buffer = new T[capacity];
@@ -89,7 +88,10 @@ namespace CircularBuffer
         /// Maximum capacity of the buffer. Elements pushed into the buffer after
         /// maximum capacity is reached (IsFull = true), will remove an element.
         /// </summary>
-        public int Capacity { get { return _buffer.Length; } }
+        public int Capacity
+        {
+            get { return _buffer.Length; }
+        }
 
         /// <summary>
         /// Boolean indicating if Circular is at full capacity.
@@ -99,10 +101,7 @@ namespace CircularBuffer
         /// </summary>
         public bool IsFull
         {
-            get
-            {
-                return Size == Capacity;
-            }
+            get { return Size == Capacity; }
         }
 
         /// <summary>
@@ -110,16 +109,16 @@ namespace CircularBuffer
         /// </summary>
         public bool IsEmpty
         {
-            get
-            {
-                return Size == 0;
-            }
+            get { return Size == 0; }
         }
 
         /// <summary>
         /// Current buffer size (the number of elements that the buffer has).
         /// </summary>
-        public int Size { get { return _size; } }
+        public int Size
+        {
+            get { return _size; }
+        }
 
         /// <summary>
         /// Element at the front of the buffer - this[0].
@@ -154,11 +153,15 @@ namespace CircularBuffer
             {
                 if (IsEmpty)
                 {
-                    throw new IndexOutOfRangeException(string.Format("Cannot access index {0}. Buffer is empty", index));
+                    throw new IndexOutOfRangeException(
+                        string.Format("Cannot access index {0}. Buffer is empty", index)
+                    );
                 }
                 if (index >= _size)
                 {
-                    throw new IndexOutOfRangeException(string.Format("Cannot access index {0}. Buffer size is {1}", index, _size));
+                    throw new IndexOutOfRangeException(
+                        string.Format("Cannot access index {0}. Buffer size is {1}", index, _size)
+                    );
                 }
                 int actualIndex = InternalIndex(index);
                 return _buffer[actualIndex];
@@ -167,11 +170,15 @@ namespace CircularBuffer
             {
                 if (IsEmpty)
                 {
-                    throw new IndexOutOfRangeException(string.Format("Cannot access index {0}. Buffer is empty", index));
+                    throw new IndexOutOfRangeException(
+                        string.Format("Cannot access index {0}. Buffer is empty", index)
+                    );
                 }
                 if (index >= _size)
                 {
-                    throw new IndexOutOfRangeException(string.Format("Cannot access index {0}. Buffer size is {1}", index, _size));
+                    throw new IndexOutOfRangeException(
+                        string.Format("Cannot access index {0}. Buffer size is {1}", index, _size)
+                    );
                 }
                 int actualIndex = InternalIndex(index);
                 _buffer[actualIndex] = value;
@@ -181,8 +188,8 @@ namespace CircularBuffer
         /// <summary>
         /// Pushes a new element to the back of the buffer. Back()/this[Size-1]
         /// will now return this element.
-        /// 
-        /// When the buffer is full, the element at Front()/this[0] will be 
+        ///
+        /// When the buffer is full, the element at Front()/this[0] will be
         /// popped to allow for this new element to fit.
         /// </summary>
         /// <param name="item">Item to push to the back of the buffer</param>
@@ -205,8 +212,8 @@ namespace CircularBuffer
         /// <summary>
         /// Pushes a new element to the front of the buffer. Front()/this[0]
         /// will now return this element.
-        /// 
-        /// When the buffer is full, the element at Back()/this[Size-1] will be 
+        ///
+        /// When the buffer is full, the element at Back()/this[Size-1] will be
         /// popped to allow for this new element to fit.
         /// </summary>
         /// <param name="item">Item to push to the front of the buffer</param>
@@ -227,7 +234,7 @@ namespace CircularBuffer
         }
 
         /// <summary>
-        /// Removes the element at the back of the buffer. Decreasing the 
+        /// Removes the element at the back of the buffer. Decreasing the
         /// Buffer size by 1.
         /// </summary>
         public void PopBack()
@@ -239,7 +246,7 @@ namespace CircularBuffer
         }
 
         /// <summary>
-        /// Removes the element at the front of the buffer. Decreasing the 
+        /// Removes the element at the front of the buffer. Decreasing the
         /// Buffer size by 1.
         /// </summary>
         public void PopFront()
@@ -265,7 +272,7 @@ namespace CircularBuffer
 
         /// <summary>
         /// Copies the buffer contents to an array, according to the logical
-        /// contents of the buffer (i.e. independent of the internal 
+        /// contents of the buffer (i.e. independent of the internal
         /// order/contents)
         /// </summary>
         /// <returns>A new array with a copy of the buffer contents.</returns>
@@ -290,7 +297,7 @@ namespace CircularBuffer
         ///
         /// Fast: does not copy the array elements.
         /// Useful for methods like <c>Send(IList&lt;ArraySegment&lt;Byte&gt;&gt;)</c>.
-        /// 
+        ///
         /// <remarks>Segments may be empty.</remarks>
         /// </summary>
         /// <returns>An IList with 2 segments corresponding to the buffer content.</returns>
@@ -372,13 +379,13 @@ namespace CircularBuffer
             return _start + (index < (Capacity - _start) ? index : index - Capacity);
         }
 
-        // doing ArrayOne and ArrayTwo methods returning ArraySegment<T> as seen here: 
+        // doing ArrayOne and ArrayTwo methods returning ArraySegment<T> as seen here:
         // http://www.boost.org/doc/libs/1_37_0/libs/circular_buffer/doc/circular_buffer.html#classboost_1_1circular__buffer_1957cccdcb0c4ef7d80a34a990065818d
         // http://www.boost.org/doc/libs/1_37_0/libs/circular_buffer/doc/circular_buffer.html#classboost_1_1circular__buffer_1f5081a54afbc2dfc1a7fb20329df7d5b
         // should help a lot with the code.
 
         #region Array items easy access.
-        // The array is composed by at most two non-contiguous segments, 
+        // The array is composed by at most two non-contiguous segments,
         // the next two methods allow easy access to those.
 
         private ArraySegment<T> ArrayOne()
