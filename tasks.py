@@ -3,6 +3,7 @@
 import os
 from pathlib import Path
 import shlex
+import shutil
 import subprocess
 import sys
 import textwrap
@@ -15,6 +16,10 @@ from types import ModuleType
 
 TASK_MODULES: list[ModuleType] = []
 
+PRJNAME = "Heymars"
+PRJDIR = Path(PRJNAME)
+
+VERSION = PRJDIR.joinpath("version.txt").read_text().strip()
 
 def do_check(_args: list[str]) -> None:
     """typecheck, lint etc goes here"""
@@ -36,6 +41,16 @@ def do_test(_args: list[str]) -> None:
     c("pytest")
 
 
+def do_publish(_args: list[str]) -> None:
+    nuke(PRJDIR/"bin")
+    nuke(PRJDIR/"obj")
+    c(["dotnet", "publish", "-c", "Release", "--arch", "x64"], cwd=PRJDIR)
+    os.chdir(PRJDIR/"bin/Release/net8.0-windows")
+    os.rename("win-x64", "Heymars")
+    c(["7z", "a", f"../../../deploy/heymars-{VERSION}.zip", "Heymars"])
+
+
+
 def default() -> None:
     _show_help()
 
@@ -54,6 +69,14 @@ def c(
     cmdtext = f"{cwd_text}> {cmdtext}"
     emit(cmdtext)
     subprocess.run(cmd, check=check, shell=shell, cwd=cwd)
+
+
+
+
+
+def nuke(pth):
+    if os.path.isdir(pth):
+        shutil.rmtree(pth)
 
 
 # scaffolding starts. Do not edit below
