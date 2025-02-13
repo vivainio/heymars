@@ -20,7 +20,7 @@ You need .NET 8 to run it.
 
 Here's what it looks like:
 
-![image](https://user-images.githubusercontent.com/557579/226138555-9c922cef-2132-4a67-8540-5d268ddd007b.png)
+![Image](https://github.com/user-attachments/assets/23d9891d-ff31-43f1-9f6b-5f6253bdb3ff)
 
 This was created from input json file:
 
