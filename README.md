@@ -6,6 +6,14 @@ Heymars is a small, configurable launcher GUI for technical users.
 
 Commands can be listed in a .txt, .json or .jsonnet file.
 
+# Installation
+
+It's not published to a repository. Easiest installation is installing [uv](https://docs.astral.sh/uv/) and running:
+
+```
+uvx shimpan get https://github.com/vivainio/heymars/releases/download/v1.2.1/heymars-1.2.1.zip --to ~/.local/bin
+```
+
 # Overview
 
 Here's what it looks like:
