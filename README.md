@@ -14,6 +14,8 @@ It's not published to a repository. Easiest installation is installing [uv](http
 uvx shimpan get https://github.com/vivainio/heymars/releases/download/v1.2.1/heymars-1.2.1.zip --to ~/.local/bin
 ```
 
+You need .NET 8 to run it.
+
 # Overview
 
 Here's what it looks like:
