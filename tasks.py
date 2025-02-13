@@ -51,8 +51,8 @@ def do_publish(_args: list[str]) -> None:
     nuke(deploy_dir, create=True)
 
     c(["dotnet", "publish", "-c", "Release", "--arch", "x64"], cwd=PRJDIR)
-    os.chdir(PRJDIR / "bin/Release/net8.0-windows")
-    os.rename("win-x64", "Heymars")
+    os.chdir(PRJDIR / "bin/Release/net8.0-windows/win-x64")
+    os.rename("publish", "Heymars")
     c(["7z", "a", deploy_dir / f"heymars-{VERSION}.zip", "Heymars"])
 
 
