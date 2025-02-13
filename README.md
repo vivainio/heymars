@@ -146,8 +146,6 @@ ls
 pwd
 ```
 
-
-
 # License
 
 MIT
