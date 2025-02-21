@@ -14,11 +14,13 @@ It's not published to a repository. Easiest installation is installing [uv](http
 uvx shimpan get https://github.com/vivainio/heymars/releases/download/v1.2.1/heymars-1.2.1.zip --to ~/.local/bin
 ```
 
+You need .NET 8 to run it.
+
 # Overview
 
 Here's what it looks like:
 
-![image](https://user-images.githubusercontent.com/557579/226138555-9c922cef-2132-4a67-8540-5d268ddd007b.png)
+![Image](https://github.com/user-attachments/assets/23d9891d-ff31-43f1-9f6b-5f6253bdb3ff)
 
 This was created from input json file:
 
@@ -143,8 +145,6 @@ ls
 { "title": "More complex stuff you can fit on one line", "c": "echo foobar!", "fgcolor": "green", "id": "" }
 pwd
 ```
-
-
 
 # License
 
