@@ -11,7 +11,7 @@ Commands can be listed in a .txt, .json or .jsonnet file.
 It's not published to a repository. Easiest installation is installing [uv](https://docs.astral.sh/uv/) and running:
 
 ```
-uvx shimpan get https://github.com/vivainio/heymars/releases/download/v1.2.1/heymars-1.2.2.zip --to ~/.local/bin
+uvx shimpan get https://github.com/vivainio/heymars/releases/download/v1.2.3/heymars-1.2.3.zip --to ~/.local/bin
 ```
 
 You need .NET 8 to run it.
