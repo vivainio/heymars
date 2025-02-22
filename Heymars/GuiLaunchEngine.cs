@@ -113,6 +113,10 @@ namespace GuiLaunch
                     return;
                 }
             }
+            else if (fname.EndsWith(".toml"))
+            {
+                configFile = ConfigReaders.ReadTomlFile(fname);
+            }
             else
             {
                 Commands = ConfigReaders.ReadTextFile(fname);
@@ -412,14 +416,24 @@ namespace GuiLaunch
             _listener.SpeakStatus($"{status} run {index}");
         }
 
+        public Command WrapVsCode(Command command)
+        {
+            return command
+                .WithValidation(CommandResultValidation.None)
+                .WithStandardOutputPipe(PipeTarget.ToStream(Console.OpenStandardOutput()))
+                .WithStandardErrorPipe(PipeTarget.ToStream(Console.OpenStandardError()));
+
+        }
         public async Task OpenFileInEditor(string fname)
         {
-            await Cli.Wrap("code").WithArguments(fname).ExecuteAsync();
+            await WrapVsCode(Cli.Wrap("code"))
+                .WithArguments(fname)
+                .ExecuteAsync();
         }
 
         private async Task OpenInEditor(string content)
         {
-            await Cli.Wrap("code")
+            await WrapVsCode(Cli.Wrap("code"))
                 .WithArguments("-")
                 .WithStandardInputPipe(PipeSource.FromString(content))
                 .ExecuteAsync();

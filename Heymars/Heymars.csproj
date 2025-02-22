@@ -31,6 +31,7 @@
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Text.Json" Version="9.0.2" />
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="9.0.2" />
+    <PackageReference Include="Tomlyn" Version="0.18.0" />
   </ItemGroup>
   <ItemGroup>
     <None Update="version.txt">

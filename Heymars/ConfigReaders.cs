@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CliWrap;
 using CliWrap.Buffered;
 using Spectre.Console;
+using Tomlyn.Model;
 
 namespace GuiLaunch
 {
@@ -37,6 +38,40 @@ namespace GuiLaunch
             return JsonSerializer.Deserialize<ConfigFile>(o.StandardOutput);
         }
 
+        public static ConfigFile ReadTomlFile(string fname)
+        {
+            var cont = File.ReadAllText(fname);
+
+            var cfg = Tomlyn.Toml.ToModel(cont);
+
+            string gets(TomlTable table, string key)
+            {
+                return table.TryGetValue(key, out var v) ? v as string: null;
+            }
+
+            var root = gets(cfg, "root");
+            cfg.Remove("root");
+            var commands = cfg
+                .Select(c => (key: c.Key, table: c.Value as TomlTable))
+                .Select(pair => new CommandEntry
+                {
+                    title = pair.key,
+                    id = gets(pair.table, "id"),
+                    c = gets(pair.table, "c"),
+                    cwd = gets(pair.table, "cwd"),
+                    fgcolor = gets(pair.table, "fgcolor"),
+                    bgcolor = gets(pair.table, "bgcolor"),
+                    shell = pair.table.TryGetValue("shell", out var v) ? (bool)v : null,
+                    runtags = pair.table.TryGetValue("runtags", out var vv) ? (vv as TomlArray).Select(v => v as string).ToList() : null,
+                    tags = pair.table.TryGetValue("tags", out var vvv) ? (vvv as TomlArray).Select(v => v as string).ToList() : null,
+
+                });
+            return new ConfigFile
+            {
+                root = root,
+                commands = commands.ToArray(),
+            };
+        }
         public static CommandEntry[] ReadTextFile(string fname)
         {
             static CommandEntry CreateCommand(string s)
