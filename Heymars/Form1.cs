@@ -183,7 +183,7 @@ namespace GuiLaunch
                 Process.Start(
                     new ProcessStartInfo
                     {
-                        UseShellExecute = true,
+                        UseShellExecute = false,
                         FileName = exeName,
                         Arguments = filename,
                     }
