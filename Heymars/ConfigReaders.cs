@@ -46,13 +46,12 @@ namespace GuiLaunch
 
             string gets(TomlTable table, string key)
             {
-                return table.TryGetValue(key, out var v) ? v as string: null;
+                return table.TryGetValue(key, out var v) ? v as string : null;
             }
 
             var root = gets(cfg, "root");
             cfg.Remove("root");
-            var commands = cfg
-                .Select(c => (key: c.Key, table: c.Value as TomlTable))
+            var commands = cfg.Select(c => (key: c.Key, table: c.Value as TomlTable))
                 .Select(pair => new CommandEntry
                 {
                     title = pair.key,
@@ -62,16 +61,16 @@ namespace GuiLaunch
                     fgcolor = gets(pair.table, "fgcolor"),
                     bgcolor = gets(pair.table, "bgcolor"),
                     shell = pair.table.TryGetValue("shell", out var v) ? (bool)v : null,
-                    runtags = pair.table.TryGetValue("runtags", out var vv) ? (vv as TomlArray).Select(v => v as string).ToList() : null,
-                    tags = pair.table.TryGetValue("tags", out var vvv) ? (vvv as TomlArray).Select(v => v as string).ToList() : null,
-
+                    runtags = pair.table.TryGetValue("runtags", out var vv)
+                        ? (vv as TomlArray).Select(v => v as string).ToList()
+                        : null,
+                    tags = pair.table.TryGetValue("tags", out var vvv)
+                        ? (vvv as TomlArray).Select(v => v as string).ToList()
+                        : null,
                 });
-            return new ConfigFile
-            {
-                root = root,
-                commands = commands.ToArray(),
-            };
+            return new ConfigFile { root = root, commands = commands.ToArray() };
         }
+
         public static CommandEntry[] ReadTextFile(string fname)
         {
             static CommandEntry CreateCommand(string s)

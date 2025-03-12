@@ -422,13 +422,11 @@ namespace GuiLaunch
                 .WithValidation(CommandResultValidation.None)
                 .WithStandardOutputPipe(PipeTarget.ToStream(Console.OpenStandardOutput()))
                 .WithStandardErrorPipe(PipeTarget.ToStream(Console.OpenStandardError()));
-
         }
+
         public async Task OpenFileInEditor(string fname)
         {
-            await WrapVsCode(Cli.Wrap("code"))
-                .WithArguments(fname)
-                .ExecuteAsync();
+            await WrapVsCode(Cli.Wrap("code")).WithArguments(fname).ExecuteAsync();
         }
 
         private async Task OpenInEditor(string content)
