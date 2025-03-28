@@ -664,6 +664,41 @@ namespace GuiLaunch
             return news;
         }
 
+        public string ResolveConfigFileIfNotSpecified()
+        {
+            // check current dir for heymars.toml, heymars.json or heymars.jsonnet. If not found use from history
+            var currentDir = Directory.GetCurrentDirectory();
+            var toml = Path.Combine(currentDir, "heymars.toml");
+            var json = Path.Combine(currentDir, "heymars.json");
+            var jsonnet = Path.Combine(currentDir, "heymars.jsonnet");
+            if (File.Exists(toml))
+            {
+                return toml;
+            }
+            if (File.Exists(json))
+            {
+                return json;
+            }
+            if (File.Exists(jsonnet))
+            {
+                return jsonnet;
+            }
+
+            return GetPreviousConfig();
+        }
+        private string GetPreviousConfig()
+        {
+            var storage = new SettingsStorage();
+            string prevConfig = null;
+            storage.LoadAndModify(
+                (settings) =>
+                {
+                    prevConfig = settings.history.FirstOrDefault();
+                }
+            );
+            return prevConfig;
+        }
+
         internal void PopulateFileList(ComboBox cbCurrentConfig)
         {
             var storage = new SettingsStorage();

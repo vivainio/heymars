@@ -6,7 +6,7 @@ namespace GuiLaunch
     public class LauncherSettings : CommandSettings
     {
         [Description("Path to config file. Can be .json, .jsonnet or flat text file")]
-        [CommandArgument(0, "<CONFIG_FILE>")]
+        [CommandArgument(0, "[CONFIG_FILE]")]
         public string Config { get; set; }
 
         [Description(

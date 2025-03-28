@@ -10,12 +10,24 @@ namespace GuiLaunch
 {
     public class LauncherCommand : AsyncCommand<LauncherSettings>
     {
+
         public override async Task<int> ExecuteAsync(
             CommandContext context,
             LauncherSettings settings
         )
         {
             var eng = new GuiLaunchEngine();
+            if (settings.Config == null)
+            {
+                settings.Config = eng.ResolveConfigFileIfNotSpecified();
+                if (settings.Config == null)
+                {
+                    Console.WriteLine(
+                        "Please specify Heymars config file (.toml, json, ...) as parameter."
+                    );
+                    return 1;
+                }
+            }
             await eng.PopulateFromConfigFile(settings.Config);
             if (settings.Root != null)
             {
